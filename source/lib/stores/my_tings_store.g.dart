@@ -14,18 +14,24 @@ mixin _$MyTingsStore on _MyTingsStore, Store {
   @override
   ObservableList<ProductItem> get myTingsFiltered =>
       (_$myTingsFilteredComputed ??= Computed<ObservableList<ProductItem>>(
-              () => super.myTingsFiltered,
-              name: '_MyTingsStore.myTingsFiltered'))
+            () => super.myTingsFiltered,
+            name: '_MyTingsStore.myTingsFiltered',
+          ))
           .value;
   Computed<bool>? _$hasAnyComputed;
 
   @override
-  bool get hasAny => (_$hasAnyComputed ??=
-          Computed<bool>(() => super.hasAny, name: '_MyTingsStore.hasAny'))
-      .value;
+  bool get hasAny =>
+      (_$hasAnyComputed ??= Computed<bool>(
+            () => super.hasAny,
+            name: '_MyTingsStore.hasAny',
+          ))
+          .value;
 
-  late final _$myTingsAtom =
-      Atom(name: '_MyTingsStore.myTings', context: context);
+  late final _$myTingsAtom = Atom(
+    name: '_MyTingsStore.myTings',
+    context: context,
+  );
 
   @override
   ObservableList<ProductItem> get myTings {
@@ -40,8 +46,10 @@ mixin _$MyTingsStore on _MyTingsStore, Store {
     });
   }
 
-  late final _$isLoadingAtom =
-      Atom(name: '_MyTingsStore.isLoading', context: context);
+  late final _$isLoadingAtom = Atom(
+    name: '_MyTingsStore.isLoading',
+    context: context,
+  );
 
   @override
   bool get isLoading {
@@ -56,8 +64,10 @@ mixin _$MyTingsStore on _MyTingsStore, Store {
     });
   }
 
-  late final _$displayGridAtom =
-      Atom(name: '_MyTingsStore.displayGrid', context: context);
+  late final _$displayGridAtom = Atom(
+    name: '_MyTingsStore.displayGrid',
+    context: context,
+  );
 
   @override
   bool get displayGrid {
@@ -72,8 +82,10 @@ mixin _$MyTingsStore on _MyTingsStore, Store {
     });
   }
 
-  late final _$filterTagIdAtom =
-      Atom(name: '_MyTingsStore.filterTagId', context: context);
+  late final _$filterTagIdAtom = Atom(
+    name: '_MyTingsStore.filterTagId',
+    context: context,
+  );
 
   @override
   String? get filterTagId {
@@ -88,49 +100,62 @@ mixin _$MyTingsStore on _MyTingsStore, Store {
     });
   }
 
-  late final _$loadAsyncAction =
-      AsyncAction('_MyTingsStore.load', context: context);
+  late final _$loadAsyncAction = AsyncAction(
+    '_MyTingsStore.load',
+    context: context,
+  );
 
   @override
   Future<void> load() {
     return _$loadAsyncAction.run(() => super.load());
   }
 
-  late final _$addAsyncAction =
-      AsyncAction('_MyTingsStore.add', context: context);
+  late final _$addAsyncAction = AsyncAction(
+    '_MyTingsStore.add',
+    context: context,
+  );
 
   @override
   Future<ProductItem> add(ProductItem product) {
     return _$addAsyncAction.run(() => super.add(product));
   }
 
-  late final _$removeAsyncAction =
-      AsyncAction('_MyTingsStore.remove', context: context);
+  late final _$removeAsyncAction = AsyncAction(
+    '_MyTingsStore.remove',
+    context: context,
+  );
 
   @override
   Future<void> remove(ProductItem product) {
     return _$removeAsyncAction.run(() => super.remove(product));
   }
 
-  late final _$updateAsyncAction =
-      AsyncAction('_MyTingsStore.update', context: context);
+  late final _$updateAsyncAction = AsyncAction(
+    '_MyTingsStore.update',
+    context: context,
+  );
 
   @override
   Future<void> update(ProductItem product) {
     return _$updateAsyncAction.run(() => super.update(product));
   }
 
-  late final _$setDisplayModeAsyncAction =
-      AsyncAction('_MyTingsStore.setDisplayMode', context: context);
+  late final _$setDisplayModeAsyncAction = AsyncAction(
+    '_MyTingsStore.setDisplayMode',
+    context: context,
+  );
 
   @override
   Future<void> setDisplayMode({required bool displayGrid}) {
-    return _$setDisplayModeAsyncAction
-        .run(() => super.setDisplayMode(displayGrid: displayGrid));
+    return _$setDisplayModeAsyncAction.run(
+      () => super.setDisplayMode(displayGrid: displayGrid),
+    );
   }
 
-  late final _$setFilterTagAsyncAction =
-      AsyncAction('_MyTingsStore.setFilterTag', context: context);
+  late final _$setFilterTagAsyncAction = AsyncAction(
+    '_MyTingsStore.setFilterTag',
+    context: context,
+  );
 
   @override
   Future<void> setFilterTag(String? tagId) {

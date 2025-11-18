@@ -7,17 +7,17 @@ part of 'cdn_image.dart';
 // **************************************************************************
 
 CdnImage _$CdnImageFromJson(Map<String, dynamic> json) => CdnImage(
-      url: json['url'] as String,
-      thumbnail: json['thumbnail'] as String?,
-      normal: json['normal'] as String?,
-      full: json['full'] as String?,
-      title: json['title'] as String?,
-    );
+  url: json['url'] as String,
+  thumbnail: json['thumbnail'] as String?,
+  normal: json['normal'] as String?,
+  full: json['full'] as String?,
+  title: json['title'] as String?,
+);
 
 Map<String, dynamic> _$CdnImageToJson(CdnImage instance) => <String, dynamic>{
-      'url': instance.url,
-      'thumbnail': instance.thumbnail,
-      'normal': instance.normal,
-      'full': instance.full,
-      'title': instance.title,
-    };
+  'url': instance.url,
+  'thumbnail': instance.thumbnail,
+  'normal': instance.normal,
+  'full': instance.full,
+  'title': instance.title,
+};

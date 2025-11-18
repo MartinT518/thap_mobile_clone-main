@@ -12,19 +12,26 @@ mixin _$ProductTagsStore on _ProductTagsStore, Store {
   Computed<ObservableList<TagResult>>? _$tagsWithTingsComputed;
 
   @override
-  ObservableList<TagResult> get tagsWithTings => (_$tagsWithTingsComputed ??=
-          Computed<ObservableList<TagResult>>(() => super.tagsWithTings,
-              name: '_ProductTagsStore.tagsWithTings'))
-      .value;
+  ObservableList<TagResult> get tagsWithTings =>
+      (_$tagsWithTingsComputed ??= Computed<ObservableList<TagResult>>(
+            () => super.tagsWithTings,
+            name: '_ProductTagsStore.tagsWithTings',
+          ))
+          .value;
   Computed<bool>? _$hasAnyComputed;
 
   @override
-  bool get hasAny => (_$hasAnyComputed ??=
-          Computed<bool>(() => super.hasAny, name: '_ProductTagsStore.hasAny'))
-      .value;
+  bool get hasAny =>
+      (_$hasAnyComputed ??= Computed<bool>(
+            () => super.hasAny,
+            name: '_ProductTagsStore.hasAny',
+          ))
+          .value;
 
-  late final _$tagsAtom =
-      Atom(name: '_ProductTagsStore.tags', context: context);
+  late final _$tagsAtom = Atom(
+    name: '_ProductTagsStore.tags',
+    context: context,
+  );
 
   @override
   ObservableList<TagResult> get tags {
@@ -39,8 +46,10 @@ mixin _$ProductTagsStore on _ProductTagsStore, Store {
     });
   }
 
-  late final _$isLoadingAtom =
-      Atom(name: '_ProductTagsStore.isLoading', context: context);
+  late final _$isLoadingAtom = Atom(
+    name: '_ProductTagsStore.isLoading',
+    context: context,
+  );
 
   @override
   bool get isLoading {
@@ -55,49 +64,62 @@ mixin _$ProductTagsStore on _ProductTagsStore, Store {
     });
   }
 
-  late final _$loadAsyncAction =
-      AsyncAction('_ProductTagsStore.load', context: context);
+  late final _$loadAsyncAction = AsyncAction(
+    '_ProductTagsStore.load',
+    context: context,
+  );
 
   @override
   Future<void> load() {
     return _$loadAsyncAction.run(() => super.load());
   }
 
-  late final _$addAsyncAction =
-      AsyncAction('_ProductTagsStore.add', context: context);
+  late final _$addAsyncAction = AsyncAction(
+    '_ProductTagsStore.add',
+    context: context,
+  );
 
   @override
   Future<TagResult> add(String name) {
     return _$addAsyncAction.run(() => super.add(name));
   }
 
-  late final _$renameAsyncAction =
-      AsyncAction('_ProductTagsStore.rename', context: context);
+  late final _$renameAsyncAction = AsyncAction(
+    '_ProductTagsStore.rename',
+    context: context,
+  );
 
   @override
   Future<void> rename(String tagId, String newName) {
     return _$renameAsyncAction.run(() => super.rename(tagId, newName));
   }
 
-  late final _$updateItemCountAsyncAction =
-      AsyncAction('_ProductTagsStore.updateItemCount', context: context);
+  late final _$updateItemCountAsyncAction = AsyncAction(
+    '_ProductTagsStore.updateItemCount',
+    context: context,
+  );
 
   @override
   Future<void> updateItemCount(String tagId, int value) {
-    return _$updateItemCountAsyncAction
-        .run(() => super.updateItemCount(tagId, value));
+    return _$updateItemCountAsyncAction.run(
+      () => super.updateItemCount(tagId, value),
+    );
   }
 
-  late final _$removeAsyncAction =
-      AsyncAction('_ProductTagsStore.remove', context: context);
+  late final _$removeAsyncAction = AsyncAction(
+    '_ProductTagsStore.remove',
+    context: context,
+  );
 
   @override
   Future<void> remove(TagResult tag) {
     return _$removeAsyncAction.run(() => super.remove(tag));
   }
 
-  late final _$reorderAsyncAction =
-      AsyncAction('_ProductTagsStore.reorder', context: context);
+  late final _$reorderAsyncAction = AsyncAction(
+    '_ProductTagsStore.reorder',
+    context: context,
+  );
 
   @override
   Future<void> reorder(int oldIndex, int newIndex) {

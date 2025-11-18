@@ -10,7 +10,8 @@ ProductNoteModel _$ProductNoteModelFromJson(Map<String, dynamic> json) =>
     ProductNoteModel(
       id: json['id'] as String,
       content: json['content'] as String?,
-      attachments: (json['attachments'] as List<dynamic>?)
+      attachments:
+          (json['attachments'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],

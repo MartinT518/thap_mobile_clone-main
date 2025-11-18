@@ -6,14 +6,16 @@ part of 'product_form.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProductFormModel _$ProductFormModelFromJson(Map<String, dynamic> json) =>
-    ProductFormModel(
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      fields: (json['formFields'] as List<dynamic>)
+ProductFormModel _$ProductFormModelFromJson(
+  Map<String, dynamic> json,
+) => ProductFormModel(
+  title: json['title'] as String,
+  description: json['description'] as String?,
+  fields:
+      (json['formFields'] as List<dynamic>)
           .map((e) => ProductFormFieldModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-    );
+);
 
 Map<String, dynamic> _$ProductFormModelToJson(ProductFormModel instance) =>
     <String, dynamic>{
@@ -23,22 +25,22 @@ Map<String, dynamic> _$ProductFormModelToJson(ProductFormModel instance) =>
     };
 
 ProductFormFieldModel _$ProductFormFieldModelFromJson(
-        Map<String, dynamic> json) =>
-    ProductFormFieldModel(
-      label: json['label'] as String,
-      dataType: $enumDecode(_$ProductFormFieldTypeEnumMap, json['dataType']),
-      required: boolFromString(json['required'] as String?),
-      prefilledValue: json['prefilledValue'] as String?,
-    );
+  Map<String, dynamic> json,
+) => ProductFormFieldModel(
+  label: json['label'] as String,
+  dataType: $enumDecode(_$ProductFormFieldTypeEnumMap, json['dataType']),
+  required: boolFromString(json['required'] as String?),
+  prefilledValue: json['prefilledValue'] as String?,
+);
 
 Map<String, dynamic> _$ProductFormFieldModelToJson(
-        ProductFormFieldModel instance) =>
-    <String, dynamic>{
-      'label': instance.label,
-      'prefilledValue': instance.prefilledValue,
-      'dataType': _$ProductFormFieldTypeEnumMap[instance.dataType]!,
-      'required': instance.required,
-    };
+  ProductFormFieldModel instance,
+) => <String, dynamic>{
+  'label': instance.label,
+  'prefilledValue': instance.prefilledValue,
+  'dataType': _$ProductFormFieldTypeEnumMap[instance.dataType]!,
+  'required': instance.required,
+};
 
 const _$ProductFormFieldTypeEnumMap = {
   ProductFormFieldType.text: 'text',
@@ -50,27 +52,22 @@ const _$ProductFormFieldTypeEnumMap = {
 };
 
 ProductRegistrationData _$ProductRegistrationDataFromJson(
-        Map<String, dynamic> json) =>
-    ProductRegistrationData(
-      registrationData: (json['registrationData'] as List<dynamic>)
+  Map<String, dynamic> json,
+) => ProductRegistrationData(
+  registrationData:
+      (json['registrationData'] as List<dynamic>)
           .map((e) => KeyValueData.fromJson(e as Map<String, dynamic>))
           .toList(),
-    );
+);
 
 Map<String, dynamic> _$ProductRegistrationDataToJson(
-        ProductRegistrationData instance) =>
-    <String, dynamic>{
-      'registrationData':
-          instance.registrationData.map((e) => e.toJson()).toList(),
-    };
+  ProductRegistrationData instance,
+) => <String, dynamic>{
+  'registrationData': instance.registrationData.map((e) => e.toJson()).toList(),
+};
 
-KeyValueData _$KeyValueDataFromJson(Map<String, dynamic> json) => KeyValueData(
-      key: json['key'] as String,
-      value: json['value'] as String?,
-    );
+KeyValueData _$KeyValueDataFromJson(Map<String, dynamic> json) =>
+    KeyValueData(key: json['key'] as String, value: json['value'] as String?);
 
 Map<String, dynamic> _$KeyValueDataToJson(KeyValueData instance) =>
-    <String, dynamic>{
-      'key': instance.key,
-      'value': instance.value,
-    };
+    <String, dynamic>{'key': instance.key, 'value': instance.value};

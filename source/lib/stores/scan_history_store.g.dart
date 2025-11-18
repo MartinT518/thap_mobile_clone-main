@@ -12,12 +12,17 @@ mixin _$ScanHistoryStore on _ScanHistoryStore, Store {
   Computed<bool>? _$hasAnyComputed;
 
   @override
-  bool get hasAny => (_$hasAnyComputed ??=
-          Computed<bool>(() => super.hasAny, name: '_ScanHistoryStore.hasAny'))
-      .value;
+  bool get hasAny =>
+      (_$hasAnyComputed ??= Computed<bool>(
+            () => super.hasAny,
+            name: '_ScanHistoryStore.hasAny',
+          ))
+          .value;
 
-  late final _$scanHistoryAtom =
-      Atom(name: '_ScanHistoryStore.scanHistory', context: context);
+  late final _$scanHistoryAtom = Atom(
+    name: '_ScanHistoryStore.scanHistory',
+    context: context,
+  );
 
   @override
   ObservableList<ProductItem> get scanHistory {
@@ -32,8 +37,10 @@ mixin _$ScanHistoryStore on _ScanHistoryStore, Store {
     });
   }
 
-  late final _$isLoadingAtom =
-      Atom(name: '_ScanHistoryStore.isLoading', context: context);
+  late final _$isLoadingAtom = Atom(
+    name: '_ScanHistoryStore.isLoading',
+    context: context,
+  );
 
   @override
   bool get isLoading {
@@ -48,30 +55,38 @@ mixin _$ScanHistoryStore on _ScanHistoryStore, Store {
     });
   }
 
-  late final _$loadAsyncAction =
-      AsyncAction('_ScanHistoryStore.load', context: context);
+  late final _$loadAsyncAction = AsyncAction(
+    '_ScanHistoryStore.load',
+    context: context,
+  );
 
   @override
   Future<void> load() {
     return _$loadAsyncAction.run(() => super.load());
   }
 
-  late final _$removeAsyncAction =
-      AsyncAction('_ScanHistoryStore.remove', context: context);
+  late final _$removeAsyncAction = AsyncAction(
+    '_ScanHistoryStore.remove',
+    context: context,
+  );
 
   @override
   Future<void> remove(ProductItem productItem, [bool removeFromApi = true]) {
-    return _$removeAsyncAction
-        .run(() => super.remove(productItem, removeFromApi));
+    return _$removeAsyncAction.run(
+      () => super.remove(productItem, removeFromApi),
+    );
   }
 
-  late final _$_ScanHistoryStoreActionController =
-      ActionController(name: '_ScanHistoryStore', context: context);
+  late final _$_ScanHistoryStoreActionController = ActionController(
+    name: '_ScanHistoryStore',
+    context: context,
+  );
 
   @override
   void add(ProductItem productItem) {
     final _$actionInfo = _$_ScanHistoryStoreActionController.startAction(
-        name: '_ScanHistoryStore.add');
+      name: '_ScanHistoryStore.add',
+    );
     try {
       return super.add(productItem);
     } finally {

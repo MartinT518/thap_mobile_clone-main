@@ -12,12 +12,17 @@ mixin _$ProductPagesStore on _ProductPagesStore, Store {
   Computed<bool>? _$hasAnyComputed;
 
   @override
-  bool get hasAny => (_$hasAnyComputed ??=
-          Computed<bool>(() => super.hasAny, name: '_ProductPagesStore.hasAny'))
-      .value;
+  bool get hasAny =>
+      (_$hasAnyComputed ??= Computed<bool>(
+            () => super.hasAny,
+            name: '_ProductPagesStore.hasAny',
+          ))
+          .value;
 
-  late final _$productPagesAtom =
-      Atom(name: '_ProductPagesStore.productPages', context: context);
+  late final _$productPagesAtom = Atom(
+    name: '_ProductPagesStore.productPages',
+    context: context,
+  );
 
   @override
   ObservableList<ProductPagesModel> get productPages {
@@ -32,21 +37,26 @@ mixin _$ProductPagesStore on _ProductPagesStore, Store {
     });
   }
 
-  late final _$loadAsyncAction =
-      AsyncAction('_ProductPagesStore.load', context: context);
+  late final _$loadAsyncAction = AsyncAction(
+    '_ProductPagesStore.load',
+    context: context,
+  );
 
   @override
   Future<ProductPagesModel?> load(String productId, String language) {
     return _$loadAsyncAction.run(() => super.load(productId, language));
   }
 
-  late final _$_ProductPagesStoreActionController =
-      ActionController(name: '_ProductPagesStore', context: context);
+  late final _$_ProductPagesStoreActionController = ActionController(
+    name: '_ProductPagesStore',
+    context: context,
+  );
 
   @override
   void add(ProductPagesModel model) {
     final _$actionInfo = _$_ProductPagesStoreActionController.startAction(
-        name: '_ProductPagesStore.add');
+      name: '_ProductPagesStore.add',
+    );
     try {
       return super.add(model);
     } finally {
@@ -57,7 +67,8 @@ mixin _$ProductPagesStore on _ProductPagesStore, Store {
   @override
   void update(ProductPagesModel model) {
     final _$actionInfo = _$_ProductPagesStoreActionController.startAction(
-        name: '_ProductPagesStore.update');
+      name: '_ProductPagesStore.update',
+    );
     try {
       return super.update(model);
     } finally {
