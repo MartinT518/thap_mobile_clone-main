@@ -1,0 +1,50 @@
+Script: "Ask AI" Functionality Demo
+(Scenario: User configures and uses the new "Ask AI" feature in the context of two different products.)
+
+SCENE 1: Setup – User selects their preferred AI -> The main view of the application ("Dashboard" or "My Things") opens.
+ON-SCREEN TEXT: Introducing "Thap App" AI Agent
+VIDEO:
+1. The user clicks the "Menu" icon in the bottom right corner.
+2. In the menu view, the user clicks "Settings".
+3. On the "Settings" page, the user clicks the new option "AI Assistant Settings".
+ON-SCREEN TEXT: Choose your preferred AI/LLM
+VIDEO:
+1. The "AI Settings" view opens. There is a list (e.g. "ChatGPT", "Gemini", etc.). The application shows the "Installed" mark next to them.
+2. The user selects the AI ​​model, the right to use of which he has ordered from his official representative.
+3. The application displays a window for entering the API key.
+4. After entering the key, the user presses the 'Confirm' button
+5. The application validates the API key.
+6. The green text "Assistant ready" appears in the application.
+
+SCENE 2: Use Case 1 - Pre-purchase product
+VIDEO:
+1. The user navigates back to the "My Things" ("Product Wallet") main view.
+2. The user selects a product from the "Scan history" list that they do not yet own. For example, "Reet Aus T-shirt".
+
+Scenario 1: Pre-purchase information.
+1. In the product view, the user presses the blue "Ask AI" button.
+2. A new view opens. This is not an empty text field, but a list of contextual questions.
+3. The questions are displayed (in English):
+"What is the sustainability score of this product?" 
+"What are similar alternatives?" 
+"How to properly care for this material?"
+"Ask your question..." (at the very bottom)
+4. User clicks on the prompt: "What is the sustainability score of this product?"
+5. The app opens a chat window view in the app. The question and PRODUCT INFO (e.g. "Reet Aus T-shirt, EAN: XXXXX") are already pre-filled in the prompt window. The AI ​​starts generating the answer.
+
+SCENE 3: Use Case 2 - Owned Product
+1. User returns to the THAP app, back to the "My Things" view.
+
+Scenario 2: Managing an Owned Product.
+1. The user now selects a product that they already have (My things). For example, "Sony WH-1000XM5 headphones".
+2. The user clicks on the exact same blue "Ask AI" button.
+3. The "Task Library" opens, but this time there is a completely different list of prompts.
+4. The questions (in English) are displayed:
+"How to optimize the life of this battery?"
+"Check warranty status."
+"Find me authorized repair shops."
+"What is the current aftermarket value?"
+"Ask your question..." (at the very bottom)
+5. The user clicks on the prompt: "How to optimize the life of this battery?"
+6. The process repeats. ChatGPT opens, the prompt is pre-filled, and the AI ​​generates an answer.
+This AI view could be topped with the text THANK YOU!
