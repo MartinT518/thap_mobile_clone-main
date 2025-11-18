@@ -11,6 +11,8 @@ import 'package:thap/data/repository/my_tings_repository.dart';
 import 'package:thap/data/repository/products_repository.dart';
 import 'package:thap/data/repository/tags_repository.dart';
 import 'package:thap/data/repository/user_repository.dart';
+import 'package:thap/services/ai_service.dart';
+import 'package:thap/services/ai_settings_service.dart';
 import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/data_service.dart';
 import 'package:thap/services/navigation_service.dart';
@@ -42,6 +44,8 @@ void setupServiceLocator() {
   locator.registerLazySingleton<ToastService>(() => ToastService());
   locator.registerLazySingleton<PermissionsService>(() => PermissionsService());
   locator.registerLazySingleton<AuthService>(() => AuthService());
+  locator.registerLazySingleton<AISettingsService>(() => AISettingsService());
+  locator.registerLazySingleton<AIService>(() => AIService());
 
   // Apis
   locator.registerSingleton(Dio());

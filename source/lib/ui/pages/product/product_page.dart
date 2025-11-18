@@ -18,8 +18,8 @@ import 'package:thap/ui/common/add_to_my_tings_button.dart';
 import 'package:thap/ui/common/address.dart';
 import 'package:thap/ui/common/alert_message.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
+import 'package:thap/ui/common/ask_ai_button.dart';
 import 'package:thap/ui/common/button.dart';
-import 'package:thap/ui/common/buy_button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/html_content.dart';
 import 'package:thap/ui/common/image_carousel.dart';
@@ -514,15 +514,9 @@ Widget _buildComponent(
 
         return SearchLinks(links: component.searchLinksContent!, product: product);
       case ProductPageComponentType.buyButton:
-        final isValid =
-            component.link?.title?.isNotBlank == true && component.link?.href?.isNotBlank == true;
-        if (!isValid) break;
-
-        return BuyButton(
+        return AskAIButton(
           product: product,
-          title: apiTranslate(component.link!.title!),
-          url: component.link!.href!,
-          icon: component.link!.icon,
+          isOwned: product.isOwner,
         );
 
       case ProductPageComponentType.divider:

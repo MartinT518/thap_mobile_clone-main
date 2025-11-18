@@ -11,6 +11,7 @@ import 'package:thap/ui/common/html_page.dart';
 import 'package:thap/ui/common/product_menu_item.dart';
 import 'package:thap/ui/common/typography.dart';
 import 'package:thap/ui/common/user_info.dart';
+import 'package:thap/ui/pages/ai_settings_page.dart';
 import 'package:thap/ui/pages/login/login_page.dart';
 import 'package:thap/ui/pages/settings_page.dart';
 import 'package:thap/ui/pages/user_profile_page.dart';
@@ -47,6 +48,13 @@ class MenuPage extends StatelessWidget {
               iconName: 'general_settings',
               onTap: () {
                 navigationService.push(SettingsPage());
+              },
+            ),
+            ProductMenuItem(
+              title: 'AI Assistant Settings',
+              iconName: 'general_settings',
+              onTap: () {
+                navigationService.push(const AISettingsPage());
               },
             ),
             ProductMenuItem(
