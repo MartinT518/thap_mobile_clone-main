@@ -48,18 +48,21 @@ class RegisterPage extends HookWidget {
     // Try to preselect current country
     useEffect(() {
       if (currentCountryCodeSnapshot.hasData && appDataSnapshot.hasData) {
-        final code = CountryCode.tryParse(
-          currentCountryCodeSnapshot.data!.toUpperCase(),
-        );
+        final countryCodeData = currentCountryCodeSnapshot.data;
+        if (countryCodeData != null && countryCodeData.isNotEmpty) {
+          final code = CountryCode.tryParse(
+            countryCodeData.toUpperCase(),
+          );
 
-        if (code != null) {
-          final countrySupported =
-              appDataSnapshot.data?.countries.any(
-                (c) => c.code == code.alpha3,
-              ) ??
-              false;
-          if (countrySupported) {
-            selectedUserCountry.value = code.alpha3;
+          if (code != null) {
+            final countrySupported =
+                appDataSnapshot.data?.countries.any(
+                  (c) => c.code == code.alpha3,
+                ) ??
+                false;
+            if (countrySupported) {
+              selectedUserCountry.value = code.alpha3;
+            }
           }
         }
       }

@@ -168,6 +168,8 @@ Translation files are located in `source/assets/translations/`
 - Configured workflow to serve on port 5000 using dhttpd
 - Set up static deployment configuration
 - Created project documentation
+- **Fixed web compatibility issue:** Added null-check guards for mobile-specific device features (DeviceRegion.getSIMCountryCode) in register_page.dart to prevent runtime crashes on web browsers
+- App now loads successfully and displays login screen
 
 ## Troubleshooting
 
@@ -177,15 +179,27 @@ This typically means the app is still loading. Check:
 1. Browser console for JavaScript errors
 2. Workflow logs to ensure the server is running
 3. Network tab to verify assets are loading
+4. Wait 15-30 seconds for the initial load (Flutter web can take time on first load)
+
+### WebGL warning in browser console
+
+You may see: "WARNING: Falling back to CPU-only rendering. WebGL support not detected."
+
+This is normal in some browser environments and doesn't affect core functionality. The app will use CPU rendering instead of GPU acceleration.
+
+### Google Sign-In not working
+
+Google Sign-In requires proper web configuration:
+- Client ID must be configured for web platform
+- Domain must be authorized in Google Cloud Console
+- This is expected behavior for a mobile app ported to web without full OAuth setup
 
 ### Runtime errors in browser console
 
-The app may encounter runtime errors due to:
-- Missing backend API responses
-- Mobile-specific features not available in web browsers
+The app may encounter some runtime errors due to:
+- Missing backend API responses (app connects to test API: tingsapi.test.mindworks.ee)
+- Mobile-specific features not available in web browsers (camera, vibration, etc.)
 - Missing environment configuration
-
-These are expected for a mobile app running in a web environment.
 
 ### Build errors
 
@@ -198,6 +212,17 @@ flutter pub get
 flutter packages pub run build_runner build --delete-conflicting-outputs
 flutter build web --release
 ```
+
+### After code changes, app doesn't update
+
+The workflow serves pre-built static files. After making code changes:
+
+```bash
+cd source
+flutter build web --release
+```
+
+Then restart the workflow or wait for auto-restart.
 
 ## User Preferences
 
