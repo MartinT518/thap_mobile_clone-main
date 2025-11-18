@@ -74,6 +74,63 @@ The app connects to a test API:
 - **Timeout:** 60 seconds
 - **Configuration:** `source/lib/configuration.dart`
 
+## Ask AI Feature
+
+The app now includes an integrated "Ask AI" feature that allows users to ask questions about products using their preferred AI provider.
+
+### Supported AI Providers
+
+- **OpenAI** (GPT-3.5-turbo)
+- **Google Gemini** (gemini-pro)
+- **Perplexity** (llama-3.1-sonar-small-128k-online)
+- **Deepseek** (deepseek-chat)
+
+### Feature Flow
+
+1. **Settings Configuration:**
+   - Navigate to Settings → AI Assistant Settings
+   - Select preferred AI provider
+   - Enter and validate API key
+   - Settings stored in shared_preferences
+
+2. **Product Interaction:**
+   - "Ask AI" button appears on product pages (replacing "Buy Here" button)
+   - Button is contextual based on ownership status
+
+3. **Question Selection:**
+   - **For owned products ("My Things"):**
+     - How do I care for this product?
+     - What are common issues and solutions?
+     - How can I maximize the lifespan?
+     - What accessories are compatible?
+   - **For scan history (pre-purchase):**
+     - Is this product worth buying?
+     - What are the pros and cons?
+     - Are there better alternatives?
+     - What should I know before buying?
+
+4. **AI Chat:**
+   - Streaming responses from AI provider
+   - Input remains active for follow-up questions
+   - Error handling with toast notifications
+   - Product context included in prompts
+
+### Technical Implementation
+
+**Files:**
+- `source/lib/models/ai_provider.dart` - Provider models and configurations
+- `source/lib/services/ai_settings_service.dart` - Settings persistence
+- `source/lib/services/ai_service.dart` - API integration with all providers
+- `source/lib/ui/pages/ai_settings_page.dart` - Settings UI
+- `source/lib/ui/common/ask_ai_button.dart` - Product page button
+- `source/lib/ui/pages/ai_question_selection_page.dart` - Contextual questions
+- `source/lib/ui/pages/ai_chat_page.dart` - Chat interface
+
+**Error Handling:**
+- API failures throw exceptions (not swallowed as text)
+- Toast notifications for validation and API errors
+- Graceful fallback for missing configuration
+
 ## Known Limitations
 
 Since this is a mobile app ported to web, some features may have limited functionality:
@@ -156,6 +213,19 @@ The app supports 14 languages:
 Translation files are located in `source/assets/translations/`
 
 ## Recent Changes
+
+### 2025-11-18: Ask AI Feature Implementation
+
+- **Implemented complete "Ask AI" feature** to replace "Buy Here" button with AI-powered product questions
+- Added support for 4 AI providers: OpenAI, Google Gemini, Perplexity, and Deepseek
+- Created AI Settings page for provider selection and API key configuration
+- Implemented contextual question selection based on product ownership status:
+  - Owned products ("My Things"): care, troubleshooting, accessories
+  - Scan history (pre-purchase): buying decisions, comparisons, research
+- Built AI chat interface with streaming responses and follow-up question support
+- Integrated AI services with proper error handling and toast notifications
+- Used shared_preferences for persistent settings storage
+- All code is web-compatible and follows existing Flutter patterns
 
 ### 2025-11-18: Initial Replit Setup
 
