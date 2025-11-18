@@ -9,7 +9,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/ui/common/colors.dart';
-import 'package:thap/ui/pages/login/login_page.dart';
+import 'package:thap/ui/pages/ai_settings_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,7 +120,7 @@ class _TingsAppState extends State<TingsApp> {
         ),
         debugShowCheckedModeBanner: false,
         navigatorKey: locator<NavigationService>().navigatorKey,
-        home: const LoginPage(),
+        home: const AISettingsPage(),
       ),
     );
   }
