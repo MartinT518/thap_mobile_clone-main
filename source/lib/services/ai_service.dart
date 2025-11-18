@@ -85,104 +85,88 @@ class AIService {
   }
 
   Stream<String> _askOpenAI(String apiKey, String prompt) async* {
-    try {
-      final response = await _dio.post(
-        '${AIProvider.openai.apiBaseUrl}/chat/completions',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $apiKey',
-            'Content-Type': 'application/json',
-          },
-        ),
-        data: {
-          'model': 'gpt-3.5-turbo',
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
-          'stream': false,
+    final response = await _dio.post(
+      '${AIProvider.openai.apiBaseUrl}/chat/completions',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
         },
-      );
+      ),
+      data: {
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {'role': 'user', 'content': prompt}
+        ],
+        'stream': false,
+      },
+    );
 
-      final content = response.data['choices'][0]['message']['content'];
-      yield content;
-    } catch (e) {
-      yield 'Error: Unable to get response from OpenAI';
-    }
+    final content = response.data['choices'][0]['message']['content'];
+    yield content;
   }
 
   Stream<String> _askGemini(String apiKey, String prompt) async* {
-    try {
-      final response = await _dio.post(
-        '${AIProvider.gemini.apiBaseUrl}/models/gemini-pro:generateContent?key=$apiKey',
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-        data: {
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt}
-              ]
-            }
-          ]
-        },
-      );
+    final response = await _dio.post(
+      '${AIProvider.gemini.apiBaseUrl}/models/gemini-pro:generateContent?key=$apiKey',
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+      ),
+      data: {
+        'contents': [
+          {
+            'parts': [
+              {'text': prompt}
+            ]
+          }
+        ]
+      },
+    );
 
-      final content = response.data['candidates'][0]['content']['parts'][0]
-          ['text'];
-      yield content;
-    } catch (e) {
-      yield 'Error: Unable to get response from Gemini';
-    }
+    final content = response.data['candidates'][0]['content']['parts'][0]
+        ['text'];
+    yield content;
   }
 
   Stream<String> _askPerplexity(String apiKey, String prompt) async* {
-    try {
-      final response = await _dio.post(
-        '${AIProvider.perplexity.apiBaseUrl}/chat/completions',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $apiKey',
-            'Content-Type': 'application/json',
-          },
-        ),
-        data: {
-          'model': 'llama-3.1-sonar-small-128k-online',
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
+    final response = await _dio.post(
+      '${AIProvider.perplexity.apiBaseUrl}/chat/completions',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
         },
-      );
+      ),
+      data: {
+        'model': 'llama-3.1-sonar-small-128k-online',
+        'messages': [
+          {'role': 'user', 'content': prompt}
+        ],
+      },
+    );
 
-      final content = response.data['choices'][0]['message']['content'];
-      yield content;
-    } catch (e) {
-      yield 'Error: Unable to get response from Perplexity';
-    }
+    final content = response.data['choices'][0]['message']['content'];
+    yield content;
   }
 
   Stream<String> _askDeepseek(String apiKey, String prompt) async* {
-    try {
-      final response = await _dio.post(
-        '${AIProvider.deepseek.apiBaseUrl}/chat/completions',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $apiKey',
-            'Content-Type': 'application/json',
-          },
-        ),
-        data: {
-          'model': 'deepseek-chat',
-          'messages': [
-            {'role': 'user', 'content': prompt}
-          ],
+    final response = await _dio.post(
+      '${AIProvider.deepseek.apiBaseUrl}/chat/completions',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
         },
-      );
+      ),
+      data: {
+        'model': 'deepseek-chat',
+        'messages': [
+          {'role': 'user', 'content': prompt}
+        ],
+      },
+    );
 
-      final content = response.data['choices'][0]['message']['content'];
-      yield content;
-    } catch (e) {
-      yield 'Error: Unable to get response from Deepseek';
-    }
+    final content = response.data['choices'][0]['message']['content'];
+    yield content;
   }
 }

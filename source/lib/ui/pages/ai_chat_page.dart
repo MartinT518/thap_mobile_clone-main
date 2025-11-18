@@ -138,30 +138,29 @@ class AIChatPage extends HookWidget {
                 ),
               ),
             ),
-            if (initialQuestion == null)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: TingsColors.grayLight,
-                  border: Border(
-                    top: BorderSide(color: TingsColors.grayMedium, width: 1),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    TingsTextField(
-                      controller: questionController,
-                      label: 'Ask your question',
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 12),
-                    MainButton(
-                      onTap: isLoading.value ? () {} : askQuestion,
-                      text: isLoading.value ? 'Processing...' : 'Ask',
-                    ),
-                  ],
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: TingsColors.grayLight,
+                border: Border(
+                  top: BorderSide(color: TingsColors.grayMedium, width: 1),
                 ),
               ),
+              child: Column(
+                children: [
+                  TingsTextField(
+                    controller: questionController,
+                    label: 'Ask your question',
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 12),
+                  MainButton(
+                    onTap: isLoading.value ? () {} : askQuestion,
+                    text: isLoading.value ? 'Processing...' : 'Ask',
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
