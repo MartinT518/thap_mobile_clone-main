@@ -11,14 +11,19 @@ import 'package:thap/stores/user_profile_store.dart';
 class AuthService {
   final _userProfileStore = locator<UserProfileStore>();
   final _userRepository = locator<UserRepository>();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
-  );
+  GoogleSignIn? _googleSignIn;
+  
+  GoogleSignIn get googleSignIn {
+    _googleSignIn ??= GoogleSignIn(
+      scopes: ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    );
+    return _googleSignIn!;
+  }
 
   Future<String?> socialSignIn(AuthMethod authMethod) async {
     switch (authMethod) {
       case AuthMethod.google:
-        final user = await _googleSignIn.signIn();
+        final user = await googleSignIn.signIn();
 
         if (user != null) {
           _setUserProfileGoogle(user);
@@ -59,7 +64,7 @@ class AuthService {
     if (userProfile == null) return;
 
     if (userProfile.authMethod == AuthMethod.google) {
-      await _googleSignIn.disconnect();
+      await googleSignIn.disconnect();
     } else if (userProfile.authMethod == AuthMethod.facebook) {
       // await FacebookAuth.instance.logOut();
     }
@@ -107,11 +112,11 @@ class AuthService {
   }
 
   Future<bool> _tryRestoreSessionGoogle() async {
-    final isSignedIn = await _googleSignIn.isSignedIn();
+    final isSignedIn = await googleSignIn.isSignedIn();
 
     if (!isSignedIn) return false;
 
-    final user = await _googleSignIn.signInSilently();
+    final user = await googleSignIn.signInSilently();
 
     if (user == null) return false;
 

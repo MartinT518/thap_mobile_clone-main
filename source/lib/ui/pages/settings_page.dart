@@ -22,8 +22,6 @@ class SettingsPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appRepository = locator<AppRepository>();
-    final userRepository = locator<UserRepository>();
     final navigationService = locator<NavigationService>();
     final appData = useState<AppDataModel?>(null);
     final userData = useState<UserDataResult?>(null);
@@ -31,12 +29,12 @@ class SettingsPage extends HookWidget {
     final postalCodeController = useTextEditingController();
 
     useEffect(() {
-      Future.microtask(
-        () async => appData.value = await appRepository.getData(),
-      );
-      Future.microtask(
-        () async => userData.value = await userRepository.getProfileData(),
-      );
+      Future.microtask(() async {
+        final appRepo = locator<AppRepository>();
+        final userRepo = locator<UserRepository>();
+        appData.value = await appRepo.getData();
+        userData.value = await userRepo.getProfileData();
+      });
       return null;
     }, []);
 
@@ -69,9 +67,7 @@ class SettingsPage extends HookWidget {
                             if (language.isNotBlank) {
                               userData.value?.languageCode = language!;
                               context.setLocale(Locale(language!));
-                              await userRepository.updateProfileData(
-                                languageCode: language,
-                              );
+                              await locator<UserRepository>().updateProfileData(languageCode: language);
                             }
                           },
                         ),
@@ -91,9 +87,7 @@ class SettingsPage extends HookWidget {
                           onChanged: (String? country) async {
                             if (country.isNotBlank) {
                               userData.value?.countryCode = country!;
-                              await userRepository.updateProfileData(
-                                countryCode: country,
-                              );
+                              await locator<UserRepository>().updateProfileData(countryCode: country);
                             }
                           },
                         ),

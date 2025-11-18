@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:thap/configuration_demo.dart';
+import 'package:thap/services/auth_service.dart';
+import 'package:thap/services/demo_auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/ui/common/colors.dart';
-import 'package:thap/ui/pages/ai_settings_page.dart';
+import 'package:thap/ui/pages/home_page.dart';
+import 'package:thap/ui/pages/login/login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +21,11 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   setupServiceLocator();
+  
+  if (kDemoMode) {
+    await locator<DemoAuthService>().tryRestoreSession();
+  }
+  
   await EasyLocalization.ensureInitialized();
   //
   // final appData = await locator<AppRepository>().getData();
@@ -120,7 +129,7 @@ class _TingsAppState extends State<TingsApp> {
         ),
         debugShowCheckedModeBanner: false,
         navigatorKey: locator<NavigationService>().navigatorKey,
-        home: const AISettingsPage(),
+        home: kDemoMode ? HomePage() : const LoginPage(),
       ),
     );
   }

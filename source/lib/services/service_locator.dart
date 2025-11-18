@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:thap/configuration_demo.dart';
 import 'package:thap/data/network/api/api_client.dart';
 import 'package:thap/data/network/api/app_api.dart';
 import 'package:thap/data/network/api/my_tings_api.dart';
@@ -7,6 +8,9 @@ import 'package:thap/data/network/api/products_api.dart';
 import 'package:thap/data/network/api/tags_api.dart';
 import 'package:thap/data/network/api/user_api.dart';
 import 'package:thap/data/repository/app_repository.dart';
+import 'package:thap/data/repository/demo_app_repository.dart';
+import 'package:thap/data/repository/demo_my_tings_repository.dart';
+import 'package:thap/data/repository/demo_user_repository.dart';
 import 'package:thap/data/repository/my_tings_repository.dart';
 import 'package:thap/data/repository/products_repository.dart';
 import 'package:thap/data/repository/tags_repository.dart';
@@ -15,6 +19,7 @@ import 'package:thap/services/ai_service.dart';
 import 'package:thap/services/ai_settings_service.dart';
 import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/data_service.dart';
+import 'package:thap/services/demo_auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/permissions_service.dart';
@@ -43,7 +48,15 @@ void setupServiceLocator() {
   locator.registerLazySingleton<NavigationService>(() => NavigationService());
   locator.registerLazySingleton<ToastService>(() => ToastService());
   locator.registerLazySingleton<PermissionsService>(() => PermissionsService());
-  locator.registerLazySingleton<AuthService>(() => AuthService());
+  
+  if (kDemoMode) {
+    final demoAuth = DemoAuthService();
+    locator.registerLazySingleton(() => demoAuth);
+    locator.registerLazySingleton<AuthService>(() => demoAuth as dynamic);
+  } else {
+    locator.registerLazySingleton<AuthService>(() => AuthService());
+  }
+  
   locator.registerLazySingleton<AISettingsService>(() => AISettingsService());
   locator.registerLazySingleton<AIService>(() => AIService());
 
@@ -60,14 +73,21 @@ void setupServiceLocator() {
       () => ProductsApi(locator<ApiClient>()));
 
   // Repositories
-  locator.registerLazySingleton<MyTingsRepository>(
-      () => MyTingsRepository(locator<MyTingsApi>()));
-  locator.registerLazySingleton<UserRepository>(
-      () => UserRepository(locator<UserApi>()));
-  locator.registerLazySingleton<AppRepository>(
-      () => AppRepository(locator<AppApi>()));
   locator.registerLazySingleton<TagsRepository>(
       () => TagsRepository(locator<TagsApi>()));
   locator.registerLazySingleton<ProductsRepository>(
       () => ProductsRepository(locator<ProductsApi>()));
+  
+  if (kDemoMode) {
+    locator.registerLazySingleton<MyTingsRepository>(() => DemoMyTingsRepository());
+    locator.registerLazySingleton<UserRepository>(() => DemoUserRepository());
+    locator.registerLazySingleton<AppRepository>(() => DemoAppRepository());
+  } else {
+    locator.registerLazySingleton<MyTingsRepository>(
+        () => MyTingsRepository(locator<MyTingsApi>()));
+    locator.registerLazySingleton<UserRepository>(
+        () => UserRepository(locator<UserApi>()));
+    locator.registerLazySingleton<AppRepository>(
+        () => AppRepository(locator<AppApi>()));
+  }
 }
