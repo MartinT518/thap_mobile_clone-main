@@ -1,0 +1,250 @@
+[
+  {
+    "id": "root",
+    "title": "$$title$$",
+    "contents": [
+      {
+        "type": "ImageCarusel",
+        "canUpload": "true",
+        "images": [
+          "$$images$$",
+          "API_USER_PRODUCT_IMAGE"
+        ]
+      },
+
+      {
+        "type": "Title",
+        "title": "$$title$$",
+        "hiddenIf": "hasNickname"
+      },
+
+      {
+        "type": "Title",
+        "title": "API_USER_PRODUCT_NAME",
+        "subtitle": "$$title$$",
+        "hiddenIf": "!hasNickname"
+      },
+
+      {
+        "type": "ActionButtons",
+        "links": [
+
+          {
+            "title": "[product.google]",
+            "href": "https://www.google.com/search?q=$$barcode_number$$"
+          },
+
+          {
+            "title": "[product.amazon]",
+            "href": "https://www.amazon.com/s?k=$$title$$"
+          },
+
+          {
+            "title": "[product.info.add]",
+            "href": "addNickname",
+            "hiddenIf": "hasNickname"
+          },
+
+          {
+            "title": "[product.registration.register]",
+            "href": "registerProduct",
+            "hiddenIf": "hasRegistrationData"
+          },
+
+          {
+            "title": "[product.receipt.add]",
+            "href": "addReceipt",
+            "hiddenIf": "hasReciept"
+          }
+        ]
+      },
+
+      {
+        "type": "ShortcutBand",
+        "links": [
+          {
+            "title": "[product.links_and_search]",
+            "href": "#search_links",
+            "display": "modal",
+            "icon": "search_search",
+            "colour": "beigeMedium"
+          },
+
+          {
+            "title": "[product.notes_and_photos]",
+            "href": "#product_notes",
+            "icon": "camera_camera",
+            "colour": "yellowMedium"
+          },
+
+          {
+            "title": "[product.receipt_and_warranty]",
+            "href": "#product_reciept",
+            "icon": "files_file-check",
+            "colour": "blueMedium"
+          },
+          {
+            "title": "[product.sell_and_rent]",
+            "href": "#sell_rent",
+            "display": "modal",
+            "icon": "general_cart-basket-shop-market-buy",
+            "colour": "orangeMedium"
+          }
+        ]
+      },
+
+      {
+        "type": "Alert",
+        "title": "[product.not_verified_message_title]",
+        "subtitle": "[product.not_verified_message_subtitle]",
+        "link": {
+          "icon": "general_info-notification",
+          "colour": "grayLight",
+          "href": "https://tings.info/howtoaddstuff"
+        }
+      },
+
+      {
+        "type": "KeyValueTable",
+        "allowCopy": "true",
+        "tableContents": [
+          {
+            "key": "[product.name]",
+            "value": "$$title$$"
+          },
+          {
+            "key": "[product.producer]",
+            "value": "$$manufacturer$$"
+          },
+          {
+            "key": "[product.brand]",
+            "value": "$$manufacturer$$"
+          },
+          {
+            "key": "[product.model]",
+            "value": "$$model$$"
+          },
+          {
+            "key": "[product.release_date]",
+            "value": "$$release_date$$"
+          },
+          {
+            "key": "[product.ean]",
+            "value": "$$barcode_number$$"
+          },
+          {
+            "key": "[product.manufacturer]",
+            "value": "$$manufacturer$$"
+          },
+          {}
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "product_notes",
+    "title": "[product.note.title]",
+    "contents": [
+      {
+        "type": "ActionLink",
+        "link": {
+          "title": "[product.note.add]",
+          "href": "addNote"
+        },
+        "hiddenIf": "API_USER_PRODUCT_IMAGE"
+      },
+
+      {
+        "type": "ImageCarusel",
+        "canUpload": "true",
+        "images": [ "API_USER_PRODUCT_IMAGE" ]
+      },
+
+      { "type": "Notes" }
+    ]
+  },
+
+  {
+    "id": "product_reciept",
+    "title": "[product.receipt.page_title]",
+    "contents": [
+      {
+        "type": "ActionLink",
+        "link": {
+          "title": "[product.receipt.add_title]",
+          "href": "addReceipt"
+        },
+        "hiddenIf": "hasReciept"
+      },
+
+      {
+        "type": "ImageCarusel",
+        "images": [
+          "API_PRODUCT_RECIEPT"
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "search_links",
+    "title": "[product.links_and_search]",
+    "contents": [
+      {
+        "type": "SearchLinks",
+        "searchLinksContent": [
+          {
+            "type": "google",
+            "query": "$$barcode_number$$ $$title$$"
+          },
+          {
+            "type": "youtube",
+            "query": "$$title$$"
+          },
+          {
+            "type": "ebay",
+            "query": "$$title$$"
+          },
+          {
+            "type": "amazon",
+            "query": "$$barcode_number$$ $$title$$"
+          }
+        ]
+      },
+
+      {}
+    ]
+  },
+
+  {
+    "id": "sell_rent",
+    "title": "[product.sell_and_rent]",
+    "contents": [
+      {
+        "type": "MenuItem",
+        "link": {
+          "title": "[product.prefilled_info_mail_message]",
+          "href": "XXXX",
+          "icon": ""
+        }
+      },
+      {
+        "type": "MenuItem",
+        "link": {
+          "title": "[product.share_personalized_page]",
+          "href": "XXXX",
+          "icon": ""
+        }
+      },
+      {
+        "type": "MenuItem",
+        "link": {
+          "title": "[product.add_to_ebay]",
+          "href": "XXXX",
+          "icon": ""
+        }
+      }
+    ]
+  }
+]

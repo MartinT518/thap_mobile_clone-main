@@ -1,0 +1,1516 @@
+openapi: 3.0.1
+info:
+  title: Tings.io Enduser app API
+  description: API used by enduser app for tings.io
+  contact:
+    email: viktor.varlamov@mindworks.industries
+  version: 1.0.2
+security:
+- api_key: []
+servers:
+- url: https://api.tings.io/v1
+paths:
+  /app:
+    get:
+      tags:
+      - app
+      summary: gets app data
+      responses:
+        200:
+          description: app data returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /user:
+    get:
+      tags:
+      - user
+      summary: gets user data, user identified by api token
+      responses:
+        200:
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found, user should login or register
+    put:
+      tags: 
+      - user
+      summary: updates user profile data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        200:
+          description: User profile updated    
+        
+  /user/register:
+    post:
+      tags:
+      - user
+      summary: registers user, if user of the same email exists, new user account is not created, used existing one
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestUserRegister"
+        required: true
+      responses:
+        200:
+          description: User registered
+  
+  /user/feed:
+    get:
+      tags:
+      - user
+      summary: returns messages to be shown in Feed section
+      responses:
+        200:
+          description: Feed returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedItem"
+  
+  /user/feed/markread/{messageId}:
+    get:
+      tags:
+      - user
+      summary: marks a special message as read
+      parameters:
+      - name: messageId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Message marked as read
+
+  
+  /user/scanHistory:
+    get:
+      tags:
+      - scan history
+      summary: returns user scan history
+      responses:
+        200:
+          description: returns data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListItem"
+    delete:
+      tags:
+      - scan history
+      summary: purges all user scan history
+      responses:
+        200: 
+          description: all deleted
+          
+                
+  /user/scanHistory/{productId}:
+    delete:
+      tags:
+      - scan history
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      summary: deletes user scan history for specific product
+      responses:
+        200:
+          description: deleted
+            
+                  
+  /user/deleteAllData:
+    get:
+      tags:
+      - user
+      summary: deletes all user data
+      responses:
+        200:
+          description: data deleted
+
+  
+  /mytings:
+    get:
+      tags:
+      - tings
+      summary: get list of user tings
+      responses:
+        200:
+          description: my tings list returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListItem"
+        401:
+          description: user identified by token not found
+
+  /myting/add:
+    post:
+      tags:
+      - tings
+      summary: add product to my tings
+      requestBody:
+        $ref: "#/components/requestBodies/AddToTings"
+      responses:
+        200:
+          description: added to my tings
+        409:
+          description: product already added to tings (add new instance)
+        404:
+          description: product not found
+        401:
+          description: user identified by token not found
+
+  /myting/{tingId}/remove:
+    get:
+      tags:
+      - tings
+      summary: remove ting from my tings list
+      parameters:
+      - name: tingId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: done
+  
+  /myting/{tingId}/registerProduct:
+    post:
+      tags:
+      - tings
+      summary: register product
+      parameters:
+      - name: tingId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterProduct"
+      responses:
+        200:
+          description: registered
+        409:
+          description: product already registered
+        404:
+          description: product not found
+        401:
+          description: user identified by token not found
+
+  /myting/{tingId}/setTags:
+    post:
+      tags:
+      - tings
+      summary: set tags for a ting
+      parameters:
+      - name: tingId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        $ref: "#/components/requestBodies/SetTags"
+      responses:
+        200:
+          description: tags set
+        404:
+          description: product not found
+        401:
+          description: user identified by token not found
+
+
+##########################################################################################
+  
+  /tags:
+    get: 
+     tags:
+     - tags
+     summary: returns list of user tags
+     responses:
+      200:
+        description: list retured 
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserTag"
+                
+  /tag/add:
+    post:
+      tags:
+      - tags
+      summary: adds new tag
+      requestBody:
+        $ref: "#/components/requestBodies/UserTag"
+      responses:
+        200:
+          description: tag created
+  
+  /tag/{tag}:
+    parameters:
+    - name: tag
+      in: path
+      required: true
+      schema:
+        type: string
+        
+    put:
+      tags:
+      - tags
+      summary: renames or reorders a tag
+      requestBody:
+        $ref: "#/components/requestBodies/UserTag"
+      responses:
+        200:
+          description: tag renamed
+          
+    delete:
+      tags:
+      - tags
+      summary: deletes a tag
+      responses:
+        200:
+          description: tag deleted
+        
+          
+##########################################################################################
+  
+  /mytings/{tingId}/notes:
+    parameters:
+    - name: tingId
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - notes
+      summary: returns list of notes related to ting
+      responses:
+        200:
+          description: list retured
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/NoteItem"
+        404:
+          description: ting does not exists or no notes for it
+  
+  /mytings/{tingId}/notes/uploadAttachment:
+    parameters:
+    - name: tingId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - notes
+      summary: uploads a new note attachment
+      requestBody:
+        $ref: "#/components/requestBodies/UploadNoteAttachment"
+      responses:
+        200:
+          description: upload successful, see attachment id in response
+          content:
+            application/json:
+              schema:
+                properties:
+                  attachementId:
+                    type: string
+
+  /mytings/{tingId}/notes/{noteId}/attachment/{attachmentId}:
+    parameters:
+    - name: tingId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: noteId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: attachmentId
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - notes
+      summary: returns binary data
+      responses:
+        200:
+          description: binary data with correct content type
+    delete:
+      tags:
+      - notes
+      summary: deletes attachement from note and data
+      responses:
+        200:
+          description: deleted
+        
+      
+  /mytings/{tingId}/notes/add:
+    parameters:
+    - name: tingId
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      tags:
+      - notes
+      summary: adds new note
+      requestBody:
+        $ref: "#/components/requestBodies/NoteItem"
+      responses:
+        200:
+          description: note created
+
+  /mytings/{tingId}/notes/{noteId}:
+    parameters:
+    - name: tingId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: noteId
+      in: path
+      required: true
+      schema:
+        type: string
+    put:
+      tags:
+      - notes
+      summary: updates existing note
+      requestBody:
+        $ref: "#/components/requestBodies/NoteItem"
+      responses:
+        200:
+          description: note updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteItem"
+    delete:
+      tags:
+      - notes
+      summary: deletes note
+      responses:
+        200:
+          description: note deleted
+      
+  
+      
+##########################################################################################
+
+  
+  /product/scan:
+    post:
+      tags:
+      - products
+      summary: get product data via scan data
+      requestBody:
+        $ref: "#/components/requestBodies/ProductScan"
+      responses:
+        200:
+          description: product data returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        404:
+          description: product not found
+    
+  /product/{productId}:
+    get:
+      tags:
+      - products
+      summary: get product data by product id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: product data returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+          
+  /product/{productId}/ting/{tingId}:
+    get:
+      tags:
+      - products
+      summary: get product data in ting context
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: tingId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: product data returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    
+  /product/{productId}/registrationForm:
+    get:
+      tags:
+      - products
+      summary: get product registration form fields
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: product data returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRegistrationForm"
+                
+    
+  /product/{productId}/consumables:
+    get:
+      tags:
+      - products
+      summary: get list of consumable related to product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: consumables list returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListItem"
+
+  /product/{productId}/accessories:
+    get:
+      tags:
+      - products
+      summary: get list of accessories related to product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: accessories list returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListItem"
+  
+  /product/{productId}/spareparts:
+    get:
+      tags:
+      - products
+      summary: get list of spareparts related to product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: spareparts list returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListItem"
+
+  /content/{languageCode}/{contentCode}:
+    get:
+      tags:
+      - content
+      summary: returns HTML for static content like about, help etc
+      parameters:
+      - name: languageCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: contentCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: content returned
+        404:
+          description: content not found by code
+    
+components:
+  schemas:
+    Application:
+      type: object
+      properties:
+        minSupportedVersion:
+          type: string
+          example: 101
+        languages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Language"
+        countries:
+          type: array
+          items:
+             $ref: "#/components/schemas/Country"
+            
+    User:
+      type: object
+      properties:
+        token:
+          type: string
+          example: 64590C21-F401-42C4-9F87-27BE64C8D49B
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: john.doe@example.com
+        phone:
+          type: string
+          example: +1 555 555 5555
+        region:
+          $ref: "#/components/schemas/Region"
+        language: 
+          $ref: "#/components/schemas/Language"
+        hasTings:
+          type: boolean
+        hasScanHistory:
+          type: boolean
+        unreadFeedMessages:
+          type: integer
+          example: 1
+    Region:
+      type: object
+      properties:
+        country:
+          $ref: "#/components/schemas/Country"
+        region:
+          type: string
+          example: Tallinn
+        postcode:
+          type: string
+          example: 10415
+          
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+          example: en
+        displayName:
+          type: string
+          example: English
+    
+    Country:
+      type: object
+      properties:
+        code:
+          type: string
+          example: EE
+        displayName: 
+          type: string
+          example: Estonia
+            
+    ListItem:
+      type: object
+      properties:
+        Id:
+          type: string
+          example: 899E51F0-6D26-4FC7-A02B-925901928732
+        label:
+          type: string
+          example: My home
+        productId:
+          type: string
+          example: 9B7D906D-56E7-470F-9C9A-E774D59305A7
+        productName:
+          type: string
+          example: Electrolux Washing Machine EFLS210TIW
+        displayName:
+          type: string
+          example: Washer in the basement
+        producerName:
+          type: string
+          example: Electrolux
+        imageURL:
+          type: string
+          example: https://cnd.tings.io/product_icon/899E51F0-6D26-4FC7-A02B-925901928732
+        inListOperations:
+          type: array
+          items:
+            type: string
+            example: ADD_RECIEPT, REGISTER
+        indicators:
+          type: array
+          items:
+            type: string
+            example: MESSAGE
+        tags:
+          type: array
+          items: 
+            $ref: "#/components/schemas/UserTag"
+        
+
+    FeedItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: AA7D906D-56E7-470F-9C9A-E774D59305AA
+        label:
+          type: string
+          example: "Producer news"
+        title:
+          type: string
+          example: Electrolux Washing Machine EFLS210TIW
+        tingsId:
+          type: string
+          example: 899E51F0-6D26-4FC7-A02B-925901928732
+        imageURL:
+          type: string
+          example: "https://cnd.tings.io/product_icon/899E51F0-6D26-4FC7-A02B-925901928732"
+        message:
+          type: string
+          example: "We updated the product manual of your EFLS210TIW washer. Check it out!"
+        link:
+          $ref: "#/components/schemas/Link"
+        read:
+          type: boolean
+          example: false
+        registerRead:
+          type: boolean
+          example: false
+          
+    NoteItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: CC00906D-56E7-470F-9C9A-E774D59305DD
+        title:
+          type: string
+          default: Date and time of creation
+          example: WTF happened here?
+        content:
+          type: string
+          example: I opened the washer and found these things in there
+        attachments:
+          type: array
+          items:
+            type: string
+            example: "ABCDE1F0-6D26-4FC7-A02B-925901928732"
+        
+          
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 9B7D906D-56E7-470F-9C9A-E774D59305A7
+        tingId:
+          type: string
+          example: 899E51F0-6D26-4FC7-A02B-925901928732
+        displayName:
+          type: string
+          example: Washer in the basement
+        productName:
+          type: string
+          example: Electrolux Washing Machine EFLS210TIW
+        producerName:
+          type: string
+          example: Electrolux
+        startPage:
+          type: string
+          example: "#root"
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductPage"
+        tags:
+          type: array
+          items: 
+            $ref: "#/components/schemas/UserTag"
+  
+    ProductRegistrationForm:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Register your washer now!"
+        description:
+          type: string
+          example: "Register today to recieve 17 month additional warranty"
+        formFields:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductRegistrationFormField"
+    
+    ProductRegistrationFormField:
+      type: object
+      properties:
+        label:
+          type: string
+          example: Customer Name
+        prefilledValue:
+          type: string
+          enum:
+          - firstName
+          - lastName
+          - fullName
+          - emailAddress
+          - phoneNumber
+          example: fullName
+        dataType:
+          type: string
+          enum:
+          - text
+          - textarea
+          - numeric
+          - email
+          - date
+          example: text
+        required:
+          type: boolean
+          example: true
+          
+    ProductPage:
+      type: object
+      properties:
+        id:
+          type: string
+          example: root
+        title:
+          type: string
+          example: "My fav washer"
+        contents:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductPageComponent"
+    
+    ProductPageComponent:
+      type: object
+      properties:
+        type:
+         type: string
+         example: MenuItem
+         enum:
+          - Title
+          - ImageCarusel
+          - ActionButtons
+          - Rating
+          - ShortcutBand
+          - Message
+          - MenuItem
+          - HTMLContent
+          - Document
+          - ActionLink
+          - KeyValueTable
+          - AddressBlock
+          - Alert
+          - SearchLinks
+          - VerifiedBanner
+        title:
+          type: string
+          example: Washer in the basement
+        subtitle:
+          type: string
+        link:
+          $ref: "#/components/schemas/Link"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+        rating:
+          $ref: "#/components/schemas/Rating"
+        images:
+          type: array
+          items:
+            type: string
+            example: "https://cnd.tings.io/product_icon/899E51F0-6D26-4FC7-A02B-925901928732"
+        content:
+          type: string
+          example: Welcome to wonderful world on tings!
+        contentUrl:
+          type: string
+          example: "https://cnd.tings.io/product_text/AAAE51F0-6D26-4FC7-A02B-925901928732"
+        contact:
+          $ref: "#/components/schemas/Contact"
+        tableContents:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValuePair"
+        userCanEdit:
+          type: boolean
+          default: false
+          example: false
+        allowCopy:
+          type: boolean
+          default: false
+          example: false
+        hiddenIf:
+          $ref: "#/components/schemas/ifCondition"
+        searchLinksContent:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - google
+                - amazon
+                - ebay
+                - youtube
+                - reddit
+                example: google
+              query:
+                type: string
+                example: "hello world"
+    
+    Link:
+      type: object
+      properties:
+        icon:
+          $ref: "#/components/schemas/tingsIcon"
+        title:
+          type: string
+          example: Instructions and manuals
+        href:
+          type: string
+          example: "#manuals"
+        colour:
+          $ref: "#/components/schemas/tingsColour"
+        hiddenIf:
+          $ref: "#/components/schemas/ifCondition"
+        display:
+          type: string
+          enum:
+          - page
+          - modal
+          default: page
+          example: page
+
+    Rating:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Text
+          enum:
+          - Text
+          - Stars
+        value:
+          type: string
+          example: AAA
+    
+    Contact:
+      type: object
+      properties:
+        website:
+          type: string
+          example: https://www.producer.info
+        email:
+          type: string
+          example: hello@producer.info
+        location:
+          type: string
+          example: Vana-Kalamaja 34, 10415 Tallinn, Estonia
+        phone:
+          type: string
+          example: +372 6 601 021
+          
+    KeyValuePair:
+      type: object
+      properties:
+        key:
+          type: string
+          example: EAN
+        value:
+          type: string
+          example: 978020137962
+  
+    RequestAddToTings:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: 9B7D906D-56E7-470F-9C9A-E774D59305A7
+        displayName:
+          type: string
+          example: Washer in the basement
+        addNewInstance:
+          type: boolean
+          example: false
+          
+    RequestProductScan:
+      type: object
+      properties:
+        codeType:
+          type: string
+          enum:
+            - QR
+            - EAN
+          example: EAN-13
+        codeData:
+          type: string
+          example: 978020137962
+    
+    RequestUserRegister:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum:
+          - Facebook
+          - Google
+        token:
+          type: string
+    
+    RequestRegisterProduct:
+      type: object
+      properties:
+        registrationData:
+          type: array
+          items:
+            $ref: "#/components/schemas/KeyValuePair"
+    
+    ProductListItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Calgon Tablets 15 pack (230grams)"
+        code:
+          type: string
+          example: 1249271311
+        image:
+          type: string
+          example: https://cdn.tings.io/product/123.jpg
+        price:
+          type: string
+          example: from 4.50 EUR
+        buyingOptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductListItemOption"
+    
+    ProductListItemOption:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Amazon.se"
+        price:
+          type: string
+          example: "4.50 EUR"
+        href:
+          type: string
+          example: "https://www.amazon.se/Oust-Kraftfull-avkalkningsmedel-syften-kalkborttagare/dp/B003MPIRKA/ref=sr_1_1?crid=2YBE3AIAFVCVV&keywords=Calgon+Tablets+15+pack&qid=1650618487&sprefix=calgon+tablets+15+pack%2Caps%2C71&sr=8-1"
+    
+    UserTag: 
+      type: object
+      properties:
+        tag:
+          type: string
+          example: Kitchen
+        order_number:
+          type: integer
+          example: 1
+        item_count:
+          type: integer
+          example: 12
+        
+  
+    ifCondition:
+      type: string
+      enum:
+      - hasNickname
+      - hasRegistrationData
+      - hasReciept
+      - hasNotes
+      - isMyTing
+      - hasRelatedProducts
+      - hasAccessories
+      - hasSpareparts
+      - hasConsumables
+      - "isVerified"
+      - "!hasNickname"
+      - "!hasRegistrationData"
+      - "!hasReciept"
+      - "!hasNotes"
+      - "!isMyTing"
+      - "!hasRelatedProducts"
+      - "!hasAccessories"
+      - "!hasSpareparts"
+      - "!hasConsumables"
+      - "!isVerified"
+      example: hasNotes
+      
+    tingsColour:
+      type: string
+      enum:
+      - black
+      - white
+      - grayLight
+      - grayMedium
+      - grayDark
+      - green
+      - purple
+      - yellow
+      - orange
+      - blue
+      - red
+      - pastelGreen
+      - pastelPurple
+      - pastelYellow
+      - pastelOrange
+      - pastelBlue
+      
+    tingsIcon:
+      type: string
+      enum:
+      - actions_add
+      - actions_clip
+      - actions_denie-big
+      - actions_denie
+      - actions_link-crossed
+      - actions_link
+      - actions_print
+      - actions_remove
+      - actions_unavailible
+      - arrow_arrow-bot-bended-left
+      - arrow_arrow-bot-bended-right
+      - arrow_arrow-bot-left
+      - arrow_arrow-bot-right
+      - arrow_arrow-bot
+      - arrow_arrow-left
+      - arrow_arrow-right
+      - arrow_arrow-top-bended-left
+      - arrow_arrow-top-bended-right
+      - arrow_arrow-top-left
+      - arrow_arrow-top-right
+      - arrow_arrow-top
+      - arrow_chevron-down
+      - arrow_chevron-left
+      - arrow_chevron-right
+      - arrow_chevron-up
+      - arrow_circle-arrow-left
+      - arrow_circle-arrow-right
+      - arrow_circle-arrow-top
+      - arrow_circle-bot
+      - arrow_circle-double-bot
+      - arrow_circle-double-left
+      - arrow_circle-double-right
+      - arrow_circle-double-top
+      - arrow_circle-left
+      - arrow_circle-right
+      - arrow_circle-top
+      - arrow_circle-triangle-bot
+      - arrow_circle-triangle-left
+      - arrow_circle-triangle-right
+      - arrow_circle-triangle-top
+      - arrow_curved-arrow-left-top
+      - arrow_double-chevron-down
+      - arrow_double-chevron-left
+      - arrow_double-chevron-right
+      - arrow_double-chevron-up
+      - arrow_download
+      - arrow_downloads
+      - arrow_drop-down
+      - arrow_external-link
+      - arrow_forwad-all
+      - arrow_forward-big
+      - arrow_forward-bot
+      - arrow_forward
+      - arrow_log-in
+      - arrow_log-out
+      - arrow_maximize-2
+      - arrow_maximize
+      - arrow_minimize
+      - arrow_next
+      - arrow_prev
+      - arrow_redo
+      - arrow_refresh-ccw
+      - arrow_refresh-cw
+      - arrow_reply-all-bot
+      - arrow_reply-all
+      - arrow_reply-bot
+      - arrow_reply
+      - arrow_rotate-ccw
+      - arrow_rotate-cw
+      - arrow_square-up
+      - arrow_transfer-1
+      - arrow_transfer-2
+      - arrow_undo
+      - arrow_upload
+      - arrows-forward-all-bot
+      - bookmark_bookmark-1
+      - bookmark_bookmark-cross
+      - bookmark_bookmark-crossed
+      - bookmark_bookmark-plus-1
+      - bookmark_bookmark-plus
+      - bookmark_bookmark
+      - bookmark_favorite-1
+      - bookmark_favorite
+      - bookmark_pin-crossed
+      - bookmark_pin
+      - bookmark_save-all
+      - bookmark_save-crossed
+      - bookmark_save
+      - calendar_add
+      - calendar_check
+      - calendar_cross
+      - calendar_crossed
+      - calendar_dates
+      - calendar_default
+      - calendar_delete
+      - calendar_event
+      - calendar_minus
+      - calendar_plus
+      - calendar_select-age
+      - call_call-crossed
+      - call_call-default
+      - call_call-end
+      - call_call-forwarding
+      - call_call-hold
+      - call_call-important
+      - call_call-incoming
+      - call_call-missed
+      - call_call-muted
+      - call_call-outcoming
+      - call_callback
+      - camera_camera-crossed
+      - camera_camera
+      - camera_video-crossed
+      - camera_video
+      - chat_check
+      - chat_conversation
+      - chat_cross
+      - chat_message-2
+      - chat_message-3
+      - chat_message-bubble-check
+      - chat_message-bubble-cross
+      - chat_message-bubble-dots
+      - chat_message-bubble-important
+      - chat_message-bubble-minus
+      - chat_message-bubble-plus
+      - chat_message-bubble-question
+      - chat_message-crossed
+      - chat_message-dots
+      - chat_message-forward
+      - chat_message
+      - chat_minus
+      - chat_plus
+      - chat_text
+      - connection_bluetooth-connected
+      - connection_bluetooth-crossed
+      - connection_bluetooth
+      - connection_wi-fi--1
+      - connection_wi-fi--2
+      - connection_wi-fi--3
+      - connection_wi-fi-crossed
+      - connection_wi-fi
+      - files_file-bold
+      - files_file-check
+      - files_file-code
+      - files_file-copied
+      - files_file-copy
+      - files_file-cross
+      - files_file-crossed
+      - files_file-damaged
+      - files_file-delete
+      - files_file-denied
+      - files_file-download
+      - files_file-favorite
+      - files_file-image
+      - files_file-minus
+      - files_file-music
+      - files_file-plus
+      - files_file-text
+      - files_file-upload
+      - files_file-video
+      - files_file
+      - files_folder-1
+      - files_folder-add
+      - files_folder-check
+      - files_folder-code
+      - files_folder-cross
+      - files_folder-damaged
+      - files_folder-delete
+      - files_folder-denied
+      - files_folder-download
+      - files_folder-favorite
+      - files_folder-important
+      - files_folder-minus
+      - files_folder-opened
+      - files_folder-plus
+      - files_folder-send
+      - files_folder-upload
+      - files_folder-zipped
+      - files_folder
+      - files_important
+      - files_note
+      - general_add-plus
+      - general_arrow-chevron-left
+      - general_arrow-chevron-right
+      - general_arrow-left
+      - general_boken
+      - general_bullhorn-alert-notification
+      - general_cart-basket-shop-buy
+      - general_cart-basket-shop-market-buy
+      - general_date-calendar
+      - general_dots
+      - general_energy-power
+      - general_file-attachment
+      - general_flag-market-notification
+      - general_heart
+      - general_home
+      - general_leaf-green
+      - general_list-2
+      - general_menu-burger
+      - general_menu-dots-kebab-more-vertical
+      - general_message-chat
+      - general_messages-multiple
+      - general_paper-file
+      - general_person-people-profile-user
+      - general_play-start
+      - general_qr-code-scan
+      - general_receipt-invoice-paper-doc
+      - general_search-search
+      - general_settings
+      - general_share-forward-send
+      - general_star
+      - general_support-person-help
+      - general_tools-settings-preferences
+      - home_dog-house
+      - home_home-bookmark
+      - home_home-button
+      - home_home-cross
+      - home_home-crossed
+      - home_home-denied
+      - home_home
+      - home_user
+      - interface_hashtag
+      - interface_hearth-crossed
+      - interface_hearth
+      - interface_retwit
+      - interface_share
+      - interface_thumb-down
+      - interface_thumb-up
+      - interface_verified
+      - mail_letter-cross
+      - mail_letter-forward
+      - mail_letter-minis
+      - mail_letter-new
+      - mail_letter-open
+      - mail_letter-plus
+      - mail_letter-reply
+      - mail_letter
+      - mail_postage-stamp
+      - maps_adress
+      - maps_compass
+      - maps_east-direction
+      - maps_geo-pin-crossed
+      - maps_geo-pin-location
+      - maps_geo-pin-minus
+      - maps_geo-pin-plus
+      - maps_geo-pin-question
+      - maps_geo-pin
+      - maps_globe
+      - maps_location-1
+      - maps_location
+      - maps_map-pin
+      - maps_map
+      - maps_north-direction
+      - maps_sign
+      - maps_south-direction
+      - maps_west-direction
+      - menu_menu-1
+      - menu_menu-3x3
+      - menu_menu-close
+      - menu_more-horizontal
+      - menu_more-vertical
+      - notification_alert-hexagone
+      - notification_alert-round
+      - notification_alert-triangle
+      - notification_info
+      - notification_notification-+1
+      - notification_notification-alarm
+      - notification_notification-check
+      - notification_notification-cross
+      - notification_notification-crossed
+      - notification_notification-important
+      - notification_notification-minus
+      - notification_notification-plus
+      - notification_notification-turned
+      - notification_notification
+      - notification_question
+      - search_search-cross
+      - search_search
+      - search_zoom-in
+      - search_zoom-out
+      - settings_settings-1
+      - settings_settings-2
+      - sound_ajust
+      - sound_cd
+      - sound_fast-forward
+      - sound_headphones-crossed
+      - sound_headphones
+      - sound_microphone-2-crossed
+      - sound_microphone-2
+      - sound_microphone-crossed
+      - sound_microphone
+      - sound_music-note-2
+      - sound_music-note
+      - sound_pause-circle
+      - sound_pause
+      - sound_play-circle
+      - sound_play
+      - sound_playlist-plus
+      - sound_playlist
+      - sound_portable-speaker
+      - sound_radio
+      - sound_repeat
+      - sound_rewind
+      - sound_shuffle
+      - sound_sound-crossed
+      - sound_sound-high
+      - sound_sound-low
+      - sound_sound-mute
+      - sound_sound-none
+      - sound_sound-record
+      - sound_stop-circle
+      - sound_stop
+      - sound_surround
+      - sound_tape-drive
+      - sound_tune
+      - sound_vinyl
+      - time_clock-crossed
+      - time_clock
+      - time_rewind
+      - time_stopwatch
+      - time_timer-add
+      - time_timer-check
+      - time_timer-cross
+      - time_timer-minus
+      - time_timer-plus
+      - time_timer-remove
+      - time_timer
+      - trash_trash-bin-cross
+      - trash_trash-bin-crossed
+      - trash_trash-bin-full
+      - trash_trash-bin
+
+
+  requestBodies:
+    AddToTings:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestAddToTings"
+      required: true
+    ProductScan:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestProductScan"
+      required: true
+    UserRegister:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestUserRegister"
+    
+    RegisterProduct:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestRegisterProduct"
+    
+    UploadNoteAttachment:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              fileName:
+                type: string
+                format: binary
+
+    NoteItem:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NoteItem"
+            
+    UserTag:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserTag"
+            
+    SetTags:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserTag"
+            
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+
