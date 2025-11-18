@@ -85,12 +85,32 @@ The app now includes an integrated "Ask AI" feature that allows users to ask que
 - **Perplexity** (llama-3.1-sonar-small-128k-online)
 - **Deepseek** (deepseek-chat)
 
+### Demo Mode for Testing
+
+**For quick testing without real API keys, use Demo Mode:**
+
+1. Go to Settings → AI Assistant Settings
+2. Select any AI provider
+3. Enter **`demo`** as the API key
+4. The system will validate it and use simulated AI responses
+
+**Demo mode features:**
+- Instant validation (no real API calls)
+- Context-aware simulated responses
+- Tests the complete UI flow
+- Perfect for demonstrations and testing
+
+**Alternative demo keys that work:**
+- `demo`
+- `test`
+- `demo-key-123`
+
 ### Feature Flow
 
 1. **Settings Configuration:**
    - Navigate to Settings → AI Assistant Settings
    - Select preferred AI provider
-   - Enter and validate API key
+   - Enter and validate API key (or use "demo" for testing)
    - Settings stored in shared_preferences
 
 2. **Product Interaction:**
@@ -99,15 +119,14 @@ The app now includes an integrated "Ask AI" feature that allows users to ask que
 
 3. **Question Selection:**
    - **For owned products ("My Things"):**
-     - How do I care for this product?
-     - What are common issues and solutions?
-     - How can I maximize the lifespan?
-     - What accessories are compatible?
+     - How to optimize this battery life?
+     - Check warranty status
+     - Find me authorized repair shops
+     - What is the secondary market value at this moment?
    - **For scan history (pre-purchase):**
-     - Is this product worth buying?
-     - What are the pros and cons?
-     - Are there better alternatives?
-     - What should I know before buying?
+     - What is the sustainability score for this product?
+     - What are the similar alternatives?
+     - How to properly care for this material?
 
 4. **AI Chat:**
    - Streaming responses from AI provider
@@ -130,6 +149,12 @@ The app now includes an integrated "Ask AI" feature that allows users to ask que
 - API failures throw exceptions (not swallowed as text)
 - Toast notifications for validation and API errors
 - Graceful fallback for missing configuration
+
+**Demo Mode Implementation:**
+- Accepts demo API keys: `demo`, `test`, or `demo-key-123`
+- Returns contextual simulated responses based on question type
+- No real API calls needed for testing
+- Perfect for showcasing the feature without credentials
 
 ## Known Limitations
 
