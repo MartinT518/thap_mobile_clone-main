@@ -156,6 +156,32 @@ class _AIProviderSetup extends HookWidget {
               ContentBig(
                 'Get your API key from the ${provider.displayName} website',
               ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.blue.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ContentBig(
+                      '💡 Demo Mode',
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(height: 4),
+                    ContentBig(
+                      'For testing, enter: demo\n\nThis will use simulated AI responses without requiring a real API key.',
+                      color: Colors.grey.shade700,
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 24),
               TingsTextField(
                 controller: apiKeyController,
