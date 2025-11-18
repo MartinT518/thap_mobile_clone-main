@@ -21,15 +21,15 @@ class AIQuestionSelectionPage extends StatelessWidget {
   List<String> get _questions {
     if (isOwned) {
       return [
-        'How to optimize this battery life?',
+        'How to optimize the life of this battery?',
         'Check warranty status.',
         'Find me authorized repair shops.',
-        'What is the secondary market value at this moment?',
+        'What is the current aftermarket value?',
       ];
     } else {
       return [
-        'What is the sustainability score for this product?',
-        'What are the similar alternatives?',
+        'What is the sustainability score of this product?',
+        'What are similar alternatives?',
         'How to properly care for this material?',
       ];
     }
@@ -52,7 +52,7 @@ class AIQuestionSelectionPage extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: Heading4('Choose a question or ask your own'),
+                child: Heading4('Select a question or ask your own'),
               ),
               Expanded(
                 child: ListView(

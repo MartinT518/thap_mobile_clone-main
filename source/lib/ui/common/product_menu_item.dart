@@ -12,6 +12,7 @@ class ProductMenuItem extends StatelessWidget {
     this.onTap,
     this.dividerTop = false,
     this.dividerBottom = true,
+    this.trailing,
   });
 
   final String? iconName;
@@ -19,6 +20,7 @@ class ProductMenuItem extends StatelessWidget {
   final Function()? onTap;
   final bool dividerTop;
   final bool dividerBottom;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,11 @@ class ProductMenuItem extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  if (trailing != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: trailing!,
+                    ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: TingIcon(

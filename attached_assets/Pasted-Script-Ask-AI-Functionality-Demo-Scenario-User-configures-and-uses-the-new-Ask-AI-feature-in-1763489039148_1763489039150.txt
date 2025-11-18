@@ -31,6 +31,13 @@ Scenario 1: Pre-purchase information.
 "Ask your question..." (at the very bottom)
 4. User clicks on the prompt: "What is the sustainability score of this product?"
 5. The app opens a chat window view in the app. The question and PRODUCT INFO (e.g. "Reet Aus T-shirt, EAN: XXXXX") are already pre-filled in the prompt window. The AI ​​starts generating the answer.
+6. The answer will be from the AI model: "Based on the product info for the Reet Aus T-shirt, here is its sustainability analysis:
+This product is a prime example of upcycling. It is manufactured from post-industrial textile waste, meaning it avoids the carbon-intensive and water-heavy processes of growing virgin cotton and dyeing new fabric.
+While there is no single universal "score," its key metrics are:
+Circularity (A+): Made entirely from leftover materials.
+Carbon Footprint (A): Reduces CO2 emissions by an average of 70-80%.
+Water Usage (A+): Saves thousands of liters of water per garment.
+Summary: This T-shirt is a best-in-class circular product, drastically reducing waste and environmental impact."
 
 SCENE 3: Use Case 2 - Owned Product
 1. User returns to the THAP app, back to the "My Things" view.
@@ -47,4 +54,11 @@ Scenario 2: Managing an Owned Product.
 "Ask your question..." (at the very bottom)
 5. The user clicks on the prompt: "How to optimize the life of this battery?"
 6. The process repeats. ChatGPT opens, the prompt is pre-filled, and the AI ​​generates an answer.
+6.1 The answer will be from the AI model: "Here are the best practices to optimize the battery life for your Sony WH-1000XM5 headphones:
+
+Use the Sony Headphones Connect App: The most important step. Activate the "Battery Care" feature in the app. This limits the maximum charge to 90-95%, which significantly extends the battery's long-term health.
+
+Avoid Extreme Heat: Do not leave your headphones in a hot car or in direct sunlight, as high heat permanently degrades the battery.
+
+Disable Unused Features: When not needed, turn off features like DSEE Extreme, Speak-to-Chat, and the multi-point connection, as they consume extra power."
 This AI view could be topped with the text THANK YOU!

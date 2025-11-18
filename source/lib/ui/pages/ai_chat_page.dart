@@ -40,8 +40,10 @@ class AIChatPage extends HookWidget {
       responseText.value = '';
 
       try {
-        final productInfo =
-            '${product.name}${product.barcode != null ? ', Barcode: ${product.barcode}' : ''}';
+        // Build product info string matching script format: "Product Name, EAN: XXXXX"
+        final productInfo = product.barcode != null
+            ? '${product.name}, EAN: ${product.barcode}'
+            : product.name;
 
         final stream = await aiService.askQuestion(
           questionController.text,
@@ -74,6 +76,21 @@ class AIChatPage extends HookWidget {
         bottom: true,
         child: Column(
           children: [
+            // THANK YOU! header as per script
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              color: Colors.blue.shade50,
+              width: double.infinity,
+              child: const Text(
+                'THANK YOU!',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
             Container(
               padding: const EdgeInsets.all(16),
               color: TingsColors.grayLight,
@@ -83,7 +100,9 @@ class AIChatPage extends HookWidget {
                   const Heading3('Product:'),
                   const SizedBox(height: 4),
                   ContentBig(
-                    '${product.name}${product.barcode != null ? ' (Barcode: ${product.barcode})' : ''}',
+                    product.barcode != null
+                        ? '${product.name}, EAN: ${product.barcode}'
+                        : product.name,
                   ),
                 ],
               ),
@@ -130,6 +149,7 @@ class AIChatPage extends HookWidget {
                           children: [
                             const Heading4('AI Response:'),
                             const SizedBox(height: 8),
+                            // Display streaming response word by word (as it streams)
                             ContentBig(responseText.value),
                           ],
                         ),

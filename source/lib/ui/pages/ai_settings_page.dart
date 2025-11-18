@@ -17,6 +17,15 @@ import 'package:thap/ui/common/typography.dart';
 class AISettingsPage extends HookWidget {
   const AISettingsPage({super.key});
 
+  Future<Map<AIProvider, bool>> _loadProviderStatus(
+      AISettingsService aiSettingsService) async {
+    final status = <AIProvider, bool>{};
+    for (final provider in AIProvider.values) {
+      status[provider] = await aiSettingsService.isProviderConfigured(provider);
+    }
+    return status;
+  }
+
   @override
   Widget build(BuildContext context) {
     final aiSettingsService = locator<AISettingsService>();
@@ -52,28 +61,48 @@ class AISettingsPage extends HookWidget {
                 child: Heading4('Choose your preferred AI/LLM'),
               ),
               Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: AIProvider.values.map((providerOption) {
-                    final isReady = selectedProvider.value == providerOption &&
-                        isConfigured.value;
-                    return ProductMenuItem(
-                      title:
-                          '${providerOption.displayName}${isReady ? ' - Assistant ready' : ''}',
-                      onTap: () async {
-                        await navigationService.push(
-                          _AIProviderSetup(provider: providerOption),
+                child: FutureBuilder<Map<AIProvider, bool>>(
+                  future: _loadProviderStatus(aiSettingsService),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    
+                    final providerStatus = snapshot.data!;
+                    
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      children: AIProvider.values.map((providerOption) {
+                        final isInstalled = providerStatus[providerOption] ?? false;
+                        
+                        return ProductMenuItem(
+                          title: providerOption.displayName,
+                          trailing: isInstalled
+                              ? const Text(
+                                  'Installed',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )
+                              : null,
+                          onTap: () async {
+                            await navigationService.push(
+                              _AIProviderSetup(provider: providerOption),
+                            );
+                            // Refresh status after returning
+                            final updatedProvider =
+                                await aiSettingsService.getSelectedProvider();
+                            selectedProvider.value = updatedProvider;
+                            if (updatedProvider != null) {
+                              isConfigured.value = await aiSettingsService
+                                  .isProviderConfigured(updatedProvider);
+                            }
+                          },
                         );
-                        final updatedProvider =
-                            await aiSettingsService.getSelectedProvider();
-                        selectedProvider.value = updatedProvider;
-                        if (updatedProvider != null) {
-                          isConfigured.value = await aiSettingsService
-                              .isProviderConfigured(updatedProvider);
-                        }
-                      },
+                      }).toList(),
                     );
-                  }).toList(),
+                  },
                 ),
               ),
             ],
@@ -127,7 +156,8 @@ class _AIProviderSetup extends HookWidget {
         if (isValid) {
           await aiSettingsService.setApiKey(provider, apiKeyController.text);
           await aiSettingsService.setSelectedProvider(provider);
-          toastService.success('${provider.displayName} configured successfully');
+          // Show "Assistant ready" success message
+          toastService.success('Assistant ready');
           navigationService.pop();
         } else {
           toastService.error('Invalid API key. Please check and try again.');

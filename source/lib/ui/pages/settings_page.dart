@@ -14,6 +14,8 @@ import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/ting_checkbox.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
+import 'package:thap/ui/pages/ai_settings_page.dart';
+import 'package:thap/ui/common/product_menu_item.dart';
 
 class SettingsPage extends HookWidget {
   SettingsPage({super.key});
@@ -108,6 +110,14 @@ class SettingsPage extends HookWidget {
                           label: tr('profile.consent_marketing'),
                           checked: false,
                           onChange: (checked) {},
+                        ),
+                        const SizedBox(height: 24),
+                        ProductMenuItem(
+                          title: 'AI Assistant Settings',
+                          iconName: 'general_settings',
+                          onTap: () {
+                            navigationService.push(const AISettingsPage());
+                          },
                         ),
                         const SizedBox(height: 34),
                         const Spacer(),
