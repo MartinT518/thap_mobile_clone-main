@@ -1,4 +1,4 @@
-modules = ["ruby-3.2", "swift-5.8", "dart-3.8"]
+modules = ["ruby-3.2", "swift-5.8", "dart-3.8", "nodejs-20"]
 [agent]
 expertMode = true
 
@@ -27,16 +27,12 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "export PATH=\"$PATH:$HOME/.pub-cache/bin\" && cd source/build/web && dhttpd --host=0.0.0.0 --port=5000"
+args = "cd source/build/web && serve -l 5000 -s ."
 waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 34595
-externalPort = 3000
 
 [deployment]
 deploymentTarget = "static"
