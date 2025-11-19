@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:logger/logger.dart';
 import 'package:thap/data/repository/my_tings_repository.dart';
@@ -8,8 +9,8 @@ import 'package:thap/models/product_item.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/my_tings_store.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/product_tags_section.dart';
 import 'package:thap/ui/common/tings_form.dart';
@@ -81,16 +82,18 @@ class SetProductInfoSection extends HookWidget {
           Row(
             children: [
               if (wasAdded) ...[
-                LightButton(
-                  expand: true,
-                  onTap: () => navigationService.pop(),
-                  text: tr('my_tings.new_ting_added_extra_info.skip'),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => navigationService.pop(),
+                    style: DesignSystemComponents.secondaryButton(),
+                    child: Text(tr('my_tings.new_ting_added_extra_info.skip')),
+                  ),
                 ),
                 const SizedBox(width: 15),
               ],
-              MainButton(
-                expand: true,
-                onTap: () async {
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
                   ting = myTingsStore.getTing(product.id)!;
 
                   if (ting.nickname != nicknameController.text) {
@@ -128,8 +131,10 @@ class SetProductInfoSection extends HookWidget {
                   }
 
                   navigationService.pop();
-                },
-                text: tr('common.done'),
+                  },
+                  style: DesignSystemComponents.primaryButton(),
+                  child: Text(tr('common.done')),
+                ),
               ),
             ],
           ),

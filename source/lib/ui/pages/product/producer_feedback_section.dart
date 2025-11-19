@@ -6,8 +6,8 @@ import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/tings_form.dart';
 
 class ProducerFeedbackSection extends HookWidget {
@@ -52,8 +52,8 @@ class ProducerFeedbackSection extends HookWidget {
             label: tr('product.feedback.email'),
           ),
           const SizedBox(height: 38),
-          MainButton(
-            onTap: () async {
+          ElevatedButton(
+            onPressed: () async {
               if (feedbackController.text.isBlank) {
                 toastService.error(tr('product.feedback.feedback_error'));
               } else {
@@ -68,7 +68,8 @@ class ProducerFeedbackSection extends HookWidget {
                 navigationService.pop();
               }
             },
-            text: tr('product.feedback.send'),
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(tr('product.feedback.send')),
           ),
         ],
       ),

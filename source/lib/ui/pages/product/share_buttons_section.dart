@@ -6,8 +6,9 @@ import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/share_service.dart';
 import 'package:thap/services/toast_service.dart';
-import 'package:thap/ui/common/button.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/colors.dart';
+import 'package:thap/ui/common/ting_icon.dart';
 
 class ShareButtonsSection extends HookWidget {
   const ShareButtonsSection({
@@ -29,23 +30,27 @@ class ShareButtonsSection extends HookWidget {
       color: TingsColors.grayLight,
       child: Row(
         children: [
-          LightButton(
-            onTap:
-                () => Clipboard.setData(
-                  ClipboardData(
-                    text: copyLinkUrl.isNotBlank ? copyLinkUrl! : content,
-                  ),
-                ).then((_) => toastService.success(tr('common.value_copied'))),
-            text: tr('product.copy_link'),
-            iconName: 'files_file-copy',
-            expand: true,
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed:
+                  () => Clipboard.setData(
+                    ClipboardData(
+                      text: copyLinkUrl.isNotBlank ? copyLinkUrl! : content,
+                    ),
+                  ).then((_) => toastService.success(tr('common.value_copied'))),
+              icon: TingIcon('files_file-copy', height: 20),
+              label: Text(tr('product.copy_link')),
+              style: DesignSystemComponents.secondaryButton(),
+            ),
           ),
           const SizedBox(width: 8),
-          LightButton(
-            onTap: () => shareService.shareText(content),
-            text: tr('product.share.share_to'),
-            iconName: 'interface_share',
-            expand: true,
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => shareService.shareText(content),
+              icon: TingIcon('interface_share', height: 20),
+              label: Text(tr('product.share.share_to')),
+              style: DesignSystemComponents.secondaryButton(),
+            ),
           ),
         ],
       ),
