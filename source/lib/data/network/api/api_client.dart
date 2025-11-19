@@ -22,9 +22,9 @@ _parseJson(String text) {
 
 class ApiClient {
   final Dio dio;
-  final UserProfileStore userProfileStore;
+  final UserProfileStore? userProfileStore; // Made nullable for Riverpod migration
 
-  ApiClient({required this.dio, required this.userProfileStore}) {
+  ApiClient({required this.dio, this.userProfileStore}) {
     dio
       ..options.baseUrl = Configuration.apiUrl
       ..options.connectTimeout = Configuration.apiTimeout
@@ -59,17 +59,19 @@ class ApiClient {
       ),
     );
 
-    // Update User header
-    reaction(
-      (_) => userProfileStore.userProfile?.email,
-      (email) => dio.options.headers['User'] = email,
-    );
+    // Update User header (only if userProfileStore is available)
+    if (userProfileStore != null) {
+      reaction(
+        (_) => userProfileStore!.userProfile?.email,
+        (email) => dio.options.headers['User'] = email,
+      );
 
-    // Update token header
-    reaction(
-      (_) => userProfileStore.token,
-      (token) => dio.options.headers['Authorization'] = 'Bearer ${userProfileStore.token}',
-    );
+      // Update token header
+      reaction(
+        (_) => userProfileStore!.token,
+        (token) => dio.options.headers['Authorization'] = 'Bearer ${userProfileStore!.token}',
+      );
+    }
 
     dio.transformer = BackgroundTransformer();
     (dio.transformer as BackgroundTransformer).jsonDecodeCallback = _parseJson;
