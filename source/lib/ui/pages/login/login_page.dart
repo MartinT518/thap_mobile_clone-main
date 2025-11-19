@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thap/data/repository/user_repository.dart';
-import 'package:thap/models/auth_method.dart';
+import 'package:thap/features/auth/domain/entities/user.dart'; // AuthMethod
 import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';

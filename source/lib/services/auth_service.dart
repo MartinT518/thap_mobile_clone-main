@@ -3,7 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:thap/data/repository/user_repository.dart';
 import 'package:thap/extensions/string_extensions.dart';
-import 'package:thap/models/auth_method.dart';
+import 'package:thap/features/auth/domain/entities/user.dart'; // AuthMethod
 import 'package:thap/models/user_profile.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/stores/user_profile_store.dart';

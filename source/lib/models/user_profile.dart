@@ -1,4 +1,4 @@
-import 'package:thap/models/auth_method.dart';
+import 'package:thap/features/auth/domain/entities/user.dart'; // AuthMethod
 
 class UserProfileModel {
   final String name;

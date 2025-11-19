@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobx/mobx.dart';
+// import 'package:mobx/mobx.dart'; // REMOVED - No longer using MobX reactions
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:thap/configuration.dart';
 import 'package:thap/services/auth_service.dart';
@@ -60,17 +60,16 @@ class ApiClient {
     );
 
     // Update User header (only if userProfileStore is available)
+    // NOTE: MobX reactions removed - headers now set manually when needed
+    // The new Riverpod architecture handles auth state differently
     if (userProfileStore != null) {
-      reaction(
-        (_) => userProfileStore!.userProfile?.email,
-        (email) => dio.options.headers['User'] = email,
-      );
-
-      // Update token header
-      reaction(
-        (_) => userProfileStore!.token,
-        (token) => dio.options.headers['Authorization'] = 'Bearer ${userProfileStore!.token}',
-      );
+      // Set initial headers if available
+      if (userProfileStore!.userProfile?.email != null) {
+        dio.options.headers['User'] = userProfileStore!.userProfile!.email;
+      }
+      if (userProfileStore!.token != null) {
+        dio.options.headers['Authorization'] = 'Bearer ${userProfileStore!.token}';
+      }
     }
 
     dio.transformer = BackgroundTransformer();
