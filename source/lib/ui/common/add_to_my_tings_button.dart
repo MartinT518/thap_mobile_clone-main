@@ -4,8 +4,8 @@ import 'package:thap/models/product_item.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/my_tings_store.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/show_tings_added_interaction.dart';
 import 'package:thap/ui/pages/home_page.dart';
 
@@ -20,9 +20,8 @@ class AddToMyTingsButton extends StatelessWidget {
     final toastService = locator<ToastService>();
     final navigationService = locator<NavigationService>();
 
-    return MainButton(
-      expand: true,
-      onTap: () async {
+    return ElevatedButton(
+      onPressed: () async {
         final ting = await myTingsStore.add(product);
         toastService.success(tr('my_tings.add_message'));
         navigationService.replace(HomePage());
@@ -30,7 +29,8 @@ class AddToMyTingsButton extends StatelessWidget {
         await showTingsAddedInteraction(context, ting);
         //  await locator<ProductPagesStore>().load(productId);
       },
-      text: tr('my_tings.add'),
+      style: DesignSystemComponents.primaryButton(),
+      child: Text(tr('my_tings.add')),
     );
   }
 }

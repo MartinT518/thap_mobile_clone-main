@@ -6,7 +6,7 @@ import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/share_service.dart';
-import 'package:thap/ui/common/button.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/pdf_viewer.dart';
 import 'package:thap/ui/common/ting_icon.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -69,29 +69,35 @@ class ProductFile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              LightButton(
-                text: tr('common.share'),
-                expand: true,
-                onTap: () async {
-                  await shareService.shareText(fileUrl);
-                },
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () async {
+                    await shareService.shareText(fileUrl);
+                  },
+                  style: DesignSystemComponents.secondaryButton(),
+                  child: Text(tr('common.share')),
+                ),
               ),
               const SizedBox(width: 15),
               if (isPdf)
-                MainButton(
-                  text: tr('common.open'),
-                  expand: true,
-                  onTap: () {
-                    navigationService.push(PdfViewer(url: fileUrl));
-                  },
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      navigationService.push(PdfViewer(url: fileUrl));
+                    },
+                    style: DesignSystemComponents.primaryButton(),
+                    child: Text(tr('common.open')),
+                  ),
                 )
               else
-                MainButton(
-                  text: tr('common.download'),
-                  expand: true,
-                  onTap: () async {
-                    await openerService.openExternalBrowser(fileUrl);
-                  },
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await openerService.openExternalBrowser(fileUrl);
+                    },
+                    style: DesignSystemComponents.primaryButton(),
+                    child: Text(tr('common.download')),
+                  ),
                 ),
             ],
           ),

@@ -6,9 +6,9 @@ import 'package:thap/models/product_item.dart';
 import 'package:thap/models/tag_result.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/my_tings_store.dart';
 import 'package:thap/stores/product_tags_store.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/ting_divider.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -74,9 +74,10 @@ class ProductTagsSection extends StatelessWidget {
         ),
         if (showDoneButton) ...[
           const SizedBox(height: 38),
-          MainButton(
-            onTap: () => navigationService.pop(),
-            text: tr('common.done'),
+          ElevatedButton(
+            onPressed: () => navigationService.pop(),
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(tr('common.done')),
           ),
         ],
       ],

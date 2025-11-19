@@ -102,21 +102,25 @@ class Address extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (email.isNotBlank)
-                      LightButton(
-                        text: tr('product.address_write'),
-                        expand: true,
-                        onTap: () async {
-                          await _openerService.openEmail(email!);
-                        },
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            await _openerService.openEmail(email!);
+                          },
+                          style: DesignSystemComponents.secondaryButton(),
+                          child: Text(tr('product.address_write')),
+                        ),
                       ),
                     if (email.isNotBlank) const SizedBox(width: 15),
                     if (phone.isNotBlank)
-                      MainButton(
-                        text: tr('product.address_call'),
-                        expand: true,
-                        onTap: () async {
-                          await _openerService.openDialer(phone!);
-                        },
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await _openerService.openDialer(phone!);
+                          },
+                          style: DesignSystemComponents.primaryButton(),
+                          child: Text(tr('product.address_call')),
+                        ),
                       ),
                   ],
                 ),

@@ -432,15 +432,16 @@ Widget _buildComponent(
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: MainButton(
-            onTap:
+          child: ElevatedButton(
+            onPressed:
                 () => navigationService.productPageNavigate(
                   context,
                   product,
                   component.link!.href!,
                   component.link!.openInModal,
                 ),
-            text: apiTranslate(component.link!.title!),
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(apiTranslate(component.link!.title!)),
           ),
         );
       case ProductPageComponentType.keyValueTable:

@@ -11,11 +11,11 @@ import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/share_service.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/my_tings_store.dart';
 import 'package:thap/stores/product_pages_store.dart';
 import 'package:thap/ui/common/alert_message.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/show_tings_added_interaction.dart';
 import 'package:thap/ui/common/ting_icon.dart';
@@ -157,9 +157,9 @@ class _ExtractProductInfoBottomBar extends HookWidget {
             else ...[
               _buildBackButton(controller),
               const SizedBox(width: 8),
-              MainButton(
-                expand: true,
-                onTap: () async {
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
                   final url = await controller?.currentUrl();
 
                   if (url.isNotBlank) {
@@ -181,8 +181,10 @@ class _ExtractProductInfoBottomBar extends HookWidget {
                       );
                     }
                   }
-                },
-                text: tr(hasInstance ? 'my_tings.update' : 'my_tings.add'),
+                  },
+                  style: DesignSystemComponents.primaryButton(),
+                  child: Text(tr(hasInstance ? 'my_tings.update' : 'my_tings.add')),
+                ),
               ),
             ],
           ],
@@ -223,8 +225,8 @@ class _ExtractProductInfoBottomBar extends HookWidget {
             const SizedBox(height: 24),
             TingsImage(result.imageUrl!, height: 160),
             const SizedBox(height: 24),
-            MainButton(
-              onTap: () async {
+            ElevatedButton(
+              onPressed: () async {
                 final hasInstance = product.instanceId != null;
                 final title = titleController.text;
                 var ting = product.copyWith(
