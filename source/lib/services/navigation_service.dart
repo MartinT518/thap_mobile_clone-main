@@ -32,31 +32,61 @@ class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   Future<dynamic> push(Widget page) {
-    return navigatorKey.currentState!.push(MaterialPageRoute<void>(
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot push page');
+      return Future.value(null);
+    }
+    return navigator.push(MaterialPageRoute<void>(
       builder: (BuildContext context) => page,
     ));
   }
 
   Future<dynamic> replace(Widget page) {
-    return navigatorKey.currentState!.pushReplacement(MaterialPageRoute<void>(
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot replace page');
+      return Future.value(null);
+    }
+    return navigator.pushReplacement(MaterialPageRoute<void>(
       builder: (BuildContext context) => page,
     ));
   }
 
   void pop<T extends Object?>([T? result]) {
-    navigatorKey.currentState!.pop(result);
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot pop');
+      return;
+    }
+    navigator.pop(result);
   }
 
   void maybePop<T extends Object?>([T? result]) {
-    navigatorKey.currentState!.maybePop(result);
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot maybePop');
+      return;
+    }
+    navigator.maybePop(result);
   }
 
   void popToRoot() {
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot popToRoot');
+      return;
+    }
+    navigator.popUntil((route) => route.isFirst);
   }
 
   Future<dynamic> replaceAll(Widget page) {
-    return navigatorKey.currentState!.pushAndRemoveUntil(
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) {
+      Logger().e('Navigator state is null - cannot replaceAll');
+      return Future.value(null);
+    }
+    return navigator.pushAndRemoveUntil(
         MaterialPageRoute<void>(builder: (BuildContext context) => page),
         (Route<dynamic> route) => false);
   }

@@ -24,6 +24,12 @@ class HtmlContent extends HookWidget {
   Widget build(BuildContext context) {
     final clampingInternal = useState<bool>(clamping);
 
+    // Sync internal state with prop changes
+    useEffect(() {
+      clampingInternal.value = clamping;
+      return null;
+    }, [clamping]);
+
     if (clampingInternal.value) {
       return Column(
         children: [

@@ -104,10 +104,11 @@ class AddReceiptSection extends HookWidget {
                 Flexible(
                   child: Stack(
                     children: [
-                      Image.file(
-                        File(imageFile.value!.path),
-                        fit: BoxFit.cover,
-                      ),
+                      if (imageFile.value != null)
+                        Image.file(
+                          File(imageFile.value!.path),
+                          fit: BoxFit.cover,
+                        ),
                       Positioned(
                         right: 15,
                         top: 15,

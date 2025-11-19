@@ -6,6 +6,7 @@ import 'package:thap/data/repository/user_repository.dart';
 import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/models/app_data.dart';
 import 'package:thap/models/user_data_result.dart';
+import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/shared/widgets/design_system_components.dart';
@@ -16,6 +17,7 @@ import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
 import 'package:thap/ui/pages/ai_settings_page.dart';
 import 'package:thap/ui/common/product_menu_item.dart';
+import 'package:thap/features/auth/presentation/pages/login_page.dart';
 
 class SettingsPage extends HookWidget {
   SettingsPage({super.key});
@@ -57,7 +59,7 @@ class SettingsPage extends HookWidget {
                           label: tr('profile.language'),
                           value: userData.value?.languageCode,
                           items:
-                              appData.value!.languages
+                              (appData.value?.languages ?? [])
                                   .map(
                                     (e) => DropdownMenuItem<String>(
                                       value: e.code,
@@ -102,14 +104,89 @@ class SettingsPage extends HookWidget {
                         const SizedBox(height: 24),
                         TingCheckbox(
                           label: tr('profile.allow_feedback'),
-                          checked: false,
-                          onChange: (checked) {},
+                          checked: userData.value?.allowFeedback ?? false,
+                          onChange: (checked) async {
+                            userData.value?.allowFeedback = checked;
+                            try {
+                              await locator<UserRepository>().updateProfileData(
+                                countryCode: userData.value?.countryCode,
+                                languageCode: userData.value?.languageCode,
+                                allowFeedback: checked,
+                              );
+                            } catch (e) {
+                              // Revert on error
+                              userData.value?.allowFeedback = !checked;
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to update: $e')),
+                                );
+                              }
+                            }
+                          },
                         ),
                         const SizedBox(height: 24),
                         TingCheckbox(
                           label: tr('profile.consent_marketing'),
-                          checked: false,
-                          onChange: (checked) {},
+                          checked: userData.value?.consentMarketing ?? false,
+                          onChange: (checked) async {
+                            userData.value?.consentMarketing = checked;
+                            try {
+                              await locator<UserRepository>().updateProfileData(
+                                countryCode: userData.value?.countryCode,
+                                languageCode: userData.value?.languageCode,
+                                consentMarketing: checked,
+                              );
+                            } catch (e) {
+                              // Revert on error
+                              userData.value?.consentMarketing = !checked;
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to update: $e')),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(tr('profile.delete_account_title')),
+                                content: Text(tr('profile.delete_account_message')),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: Text(tr('common.cancel')),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    child: Text(tr('common.delete'), style: const TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirmed == true) {
+                              try {
+                                final success = await locator<UserRepository>().deleteAllData();
+                                if (success && context.mounted) {
+                                  await locator<AuthService>().signOut();
+                                  navigationService.replaceAll(const LoginPage());
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Failed to delete account: $e')),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          style: DesignSystemComponents.primaryButton(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: Text(tr('profile.delete_account')),
                         ),
                         const SizedBox(height: 24),
                         ProductMenuItem(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -27,6 +28,7 @@ class SearchPage extends HookWidget {
     final searching = useState<bool>(false);
     final productsRepository = locator<ProductsRepository>();
     final navigationService = locator<NavigationService>();
+    final debounceTimer = useRef<Timer?>(null);
 
     Future<void> onSearch() async {
       if (!searchTextController.text.isBlank) {
@@ -46,6 +48,26 @@ class SearchPage extends HookWidget {
       }
     }
 
+    // Debounced search function (300ms delay per FR-SEARCH-001)
+    void _onSearchChanged(String value) {
+      debounceTimer.value?.cancel();
+      if (value.isBlank) {
+        showNoDataMessage.value = false;
+        showSearchInfoMessage.value = true;
+        searchResults.value = null;
+      } else {
+        debounceTimer.value = Timer(const Duration(milliseconds: 300), () {
+          onSearch();
+        });
+      }
+    }
+
+    useEffect(() {
+      return () {
+        debounceTimer.value?.cancel();
+      };
+    }, []);
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
@@ -59,11 +81,7 @@ class SearchPage extends HookWidget {
                   await onSearch();
                 },
                 onChanged: (value) {
-                  if (value.isBlank) {
-                    showNoDataMessage.value = false;
-                    showSearchInfoMessage.value = true;
-                    searchResults.value = null;
-                  } else {}
+                  _onSearchChanged(value);
                 },
                 rightIcon: GestureDetector(
                   onTap: () async {
@@ -98,9 +116,13 @@ class SearchPage extends HookWidget {
                 shrinkWrap: true,
                 padding: const EdgeInsets.only(top: 0),
                 scrollDirection: Axis.vertical,
-                itemCount: searchResults.value!.length,
+                itemCount: searchResults.value?.length ?? 0,
                 itemBuilder: (BuildContext context, int index) {
-                  final product = searchResults.value![index];
+                  final results = searchResults.value;
+                  if (results == null || index >= results.length) {
+                    return const SizedBox.shrink();
+                  }
+                  final product = results[index];
                   return Material(
                     color: TingsColors.white,
                     child: InkWell(

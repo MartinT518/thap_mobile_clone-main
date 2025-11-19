@@ -28,6 +28,43 @@ class ScanHistoryPage extends ConsumerWidget {
               padding: const EdgeInsets.only(top: 17, bottom: 15, left: 23),
               child: Heading3(tr('scan.history')),
             ),
+            if (scanHistoryState.hasValue && scanHistoryState.value!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ContentBig(tr('scan.history')),
+                    TextButton(
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text(tr('scan.clear_all_confirm_title')),
+                            content: Text(tr('scan.clear_all_confirm_message')),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: Text(tr('common.cancel')),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: Text(tr('common.clear_all'), style: const TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          final repository = await ref.read(scanHistoryRepositoryProvider.future);
+                          await repository.clearHistory();
+                          ref.invalidate(scanHistoryProvider);
+                        }
+                      },
+                      child: Text(tr('scan.clear_all')),
+                    ),
+                  ],
+                ),
+              ),
             Expanded(
               child: scanHistoryState.when(
                 data: (scanHistory) => Container(
@@ -54,10 +91,20 @@ class ScanHistoryPage extends ConsumerWidget {
                             final product = scanItem.product;
                             return Deletable(
                               itemId: scanItem.scanHistoryId,
+                              confirmDeletion: false, // No confirmation for single delete per FRD
                               onDeleted: () async {
-                                final repository = await ref.read(scanHistoryRepositoryProvider.future);
-                                await repository.removeFromHistory(scanItem.scanHistoryId);
-                                ref.invalidate(scanHistoryProvider); // Refresh the list
+                                try {
+                                  final repository = await ref.read(scanHistoryRepositoryProvider.future);
+                                  await repository.removeFromHistory(scanItem.scanHistoryId);
+                                  ref.invalidate(scanHistoryProvider); // Refresh the list
+                                } catch (e) {
+                                  // Error handling - show snackbar
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Failed to delete: $e')),
+                                    );
+                                  }
+                                }
                               },
                               child: ProductPageOpener(
                                 product: product as dynamic, // ProductItem compatibility
@@ -74,7 +121,17 @@ class ScanHistoryPage extends ConsumerWidget {
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, stack) => Center(
-                  child: ContentBig('Error: $error'),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ContentBig('Error: $error'),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => ref.invalidate(scanHistoryProvider),
+                        child: Text(tr('common.retry')),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

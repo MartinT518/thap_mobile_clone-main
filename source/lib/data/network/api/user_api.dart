@@ -23,9 +23,13 @@ class UserApi {
   }
 
   Future<Response> updateProfileData(
-      String? countryCode, String? languageCode) async {
-    return await _apiClient.patch('/v2/user/profile',
-        data: {'countryCode': countryCode, 'languageCode': languageCode});
+      String? countryCode, String? languageCode, bool? allowFeedback, bool? consentMarketing) async {
+    final data = <String, dynamic>{};
+    if (countryCode != null) data['countryCode'] = countryCode;
+    if (languageCode != null) data['languageCode'] = languageCode;
+    if (allowFeedback != null) data['allowFeedback'] = allowFeedback;
+    if (consentMarketing != null) data['consentMarketing'] = consentMarketing;
+    return await _apiClient.patch('/v2/user/profile', data: data);
   }
 
   Future<Response> getProfileData() async {

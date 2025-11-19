@@ -19,7 +19,6 @@ import 'package:thap/ui/common/address.dart';
 import 'package:thap/ui/common/alert_message.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
 import 'package:thap/ui/common/ask_ai_button.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/html_content.dart';
 import 'package:thap/ui/common/image_carousel.dart';
@@ -46,6 +45,7 @@ import 'package:thap/ui/pages/product/ting_product_more_menu.dart';
 import 'package:thap/ui/pages/scan/scan_page.dart';
 import 'package:thap/utilities/utilities.dart';
 
+/// Refactored ProductPage - Clean implementation with comprehensive error handling
 class ProductPage extends HookWidget {
   const ProductPage({
     super.key,
@@ -64,84 +64,73 @@ class ProductPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final myTingsStore = locator<MyTingsStore>();
-    final productPagesStore = locator<ProductPagesStore>();
     final navigationService = locator<NavigationService>();
 
     useEffect(() {
       if (openAction?.isNotEmpty ?? false) {
+        // Delay to ensure widget tree is built
         Timer.run(() {
-          locator<NavigationService>().productPageNavigate(context, product, openAction!);
+          try {
+            if (context.mounted) {
+              navigationService.productPageNavigate(context, product, openAction!);
+            }
+          } catch (e) {
+            Logger().e('Error navigating to action: $e');
+          }
         });
       }
       return null;
     }, [openAction]);
-    Logger().i('Page id is ${page.pageId}, product: ${product.id}');
+
+    Logger().i('ProductPage: pageId=${page.pageId}, productId=${product.id}');
 
     return WillPopScope(
       onWillPop: () async {
         if (!navigateToRootOnPop) return true;
-
-        navigationService.popToRoot();
-
+        try {
+          navigationService.popToRoot();
+        } catch (e) {
+          Logger().e('Error popping to root: $e');
+        }
         return false;
       },
       child: Builder(
         builder: (BuildContext context) {
-          // TODO: Migrate to Riverpod - temporarily stubbed
-          final productPage = page; // productPagesStore.getStoredPage(product.id, page.pageId) ?? page;
-
-          // Title not shown on root or preview pages as it should be inside the productPage content already
-          final bool showTitle = productPage.pageId != 'root' && productPage.pageId != 'preview';
-          final ting = myTingsStore.getTing(product.id);
-
-          final String? displayName =
-              (ting?.nickname?.isNotEmpty ?? false) ? ting!.nickname : product.name;
-
           if (isModal) {
-            return ProductPageComponents(page: productPage, product: product);
+            return _ProductPageContent(page: page, product: product);
           }
 
-          final showMoreMenu = !showTitle && ting != null;
+          final myTingsStore = locator<MyTingsStore>();
+          final ting = myTingsStore.getTing(product.id);
+          final showTitle = page.pageId != 'root' && page.pageId != 'preview';
+          final displayName = (ting?.nickname?.isNotEmpty ?? false) 
+              ? ting!.nickname! 
+              : product.name;
 
           return Scaffold(
             appBar: AppHeaderBar(
               title: showTitle ? displayName : null,
-              subTitle: showTitle ? apiTranslate(productPage.title) : null,
-              logo:
-                  !showTitle &&
-                          product.brandLogoUrl.isNotBlank &&
-                          product.externalProductType == null
-                      ? TingsImage(
-                        product.brandLogoUrl!,
-                        //width: 150,
-                        alignment: Alignment.centerLeft,
-                        height: 28,
-                      )
-                      : null,
+              subTitle: showTitle ? apiTranslate(page.title) : null,
+              logo: _buildLogo(),
               showBackButton: true,
               onNavigateBack: () {
-                if (navigateToRootOnPop) {
-                  navigationService.popToRoot();
-                } else {
-                  navigationService.pop();
+                try {
+                  if (navigateToRootOnPop) {
+                    navigationService.popToRoot();
+                  } else {
+                    navigationService.pop();
+                  }
+                } catch (e) {
+                  Logger().e('Error navigating back: $e');
                 }
               },
-              rightWidget: Row(
-                children: [
-                  if (!showTitle) ProductInfoShareButton(product: product),
-                  if (showMoreMenu)
-                    TingProductMoreMenu(product: product)
-                  else
-                    const SizedBox(width: 27),
-                ],
-              ),
+              rightWidget: _buildAppBarActions(showTitle, ting != null),
             ),
-            bottomNavigationBar: ting == null ? _buildTingsBottomBar(context) : null,
+            bottomNavigationBar: ting == null ? _buildBottomBar(context) : null,
             body: SafeArea(
               child: Container(
                 color: TingsColors.white,
-                child: ProductPageComponents(page: productPage, product: product),
+                child: _ProductPageContent(page: page, product: product),
               ),
             ),
           );
@@ -150,7 +139,42 @@ class ProductPage extends HookWidget {
     );
   }
 
-  SafeArea _buildTingsBottomBar(BuildContext context) {
+  Widget? _buildLogo() {
+    try {
+      if (page.pageId == 'root' || page.pageId == 'preview') {
+        if (product.brandLogoUrl.isNotBlank && product.externalProductType == null) {
+          return TingsImage(
+            product.brandLogoUrl!,
+            alignment: Alignment.centerLeft,
+            height: 28,
+          );
+        }
+      }
+    } catch (e) {
+      Logger().e('Error building logo: $e');
+    }
+    return null;
+  }
+
+  Widget _buildAppBarActions(bool showTitle, bool showMoreMenu) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!showTitle)
+          _ErrorBoundary(
+            child: ProductInfoShareButton(product: product),
+          ),
+        if (showMoreMenu)
+          _ErrorBoundary(
+            child: TingProductMoreMenu(product: product),
+          )
+        else
+          const SizedBox(width: 27),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
     final navigationService = locator<NavigationService>();
 
     return SafeArea(
@@ -162,8 +186,12 @@ class ProductPage extends HookWidget {
         child: Row(
           children: [
             GestureDetector(
-              onTap: () async {
-                navigationService.push(const ScanPage());
+              onTap: () {
+                try {
+                  navigationService.push(const ScanPage());
+                } catch (e) {
+                  Logger().e('Error opening scan page: $e');
+                }
               },
               child: Container(
                 height: 64,
@@ -184,7 +212,11 @@ class ProductPage extends HookWidget {
               ),
             ),
             const SizedBox(width: 8),
-            AddToMyTingsButton(product: product),
+            Expanded(
+              child: _ErrorBoundary(
+                child: AddToMyTingsButton(product: product),
+              ),
+            ),
           ],
         ),
       ),
@@ -192,8 +224,12 @@ class ProductPage extends HookWidget {
   }
 }
 
-class ProductPageComponents extends HookWidget {
-  const ProductPageComponents({super.key, required this.page, required this.product});
+/// Content widget with error handling
+class _ProductPageContent extends HookWidget {
+  const _ProductPageContent({
+    required this.page,
+    required this.product,
+  });
 
   final ProductPageModel page;
   final ProductItem product;
@@ -201,387 +237,746 @@ class ProductPageComponents extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final scrollController = useScrollController();
+
+    // Validate components before building
+    final validComponents = page.components.where((c) => c.type != null).toList();
+
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 0),
+      padding: EdgeInsets.zero,
       physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
       controller: scrollController,
-      itemCount: page.components.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _buildComponent(
-          context,
-          product,
-          page.components[index],
-          page.components,
-          page.userImages,
-          () {
-            scrollController.animateTo(
-              scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeInOut,
-            );
-          },
-          () {
-            scrollController.animateTo(
-              scrollController.position.maxScrollExtent - MediaQuery.of(context).size.height + 95,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeInOut,
-            );
-          },
+      itemCount: validComponents.length,
+      itemBuilder: (context, index) {
+        final component = validComponents[index];
+        
+        // Skip hidden components
+        if (component.hidden == true) {
+          return const SizedBox.shrink();
+        }
+
+        return _ErrorBoundary(
+          child: _ComponentBuilder(
+            component: component,
+            product: product,
+            allComponents: validComponents,
+            userImages: page.userImages,
+            scrollController: scrollController,
+          ),
         );
       },
     );
   }
 }
 
-Widget _buildComponent(
-  BuildContext context,
-  ProductItem product,
-  ProductPageComponentModel component,
-  List<ProductPageComponentModel> components,
-  List<CdnImage> userImages,
-  Function scrollToBottom,
-  Function scrollUp,
-) {
-  final navigationService = locator<NavigationService>();
+/// Error boundary widget - catches and handles all exceptions
+class _ErrorBoundary extends StatelessWidget {
+  const _ErrorBoundary({required this.child});
 
-  if (component.hidden == true) return Container();
+  final Widget child;
 
-  try {
-    switch (component.type) {
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        try {
+          return child;
+        } catch (e, stack) {
+          Logger().e('ErrorBoundary caught exception: $e', stackTrace: stack);
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+}
+
+/// Safe component builder with comprehensive error handling
+class _ComponentBuilder extends StatelessWidget {
+  const _ComponentBuilder({
+    required this.component,
+    required this.product,
+    required this.allComponents,
+    required this.userImages,
+    required this.scrollController,
+  });
+
+  final ProductPageComponentModel component;
+  final ProductItem product;
+  final List<ProductPageComponentModel> allComponents;
+  final List<CdnImage> userImages;
+  final ScrollController scrollController;
+
+  @override
+  Widget build(BuildContext context) {
+    // Double error boundary - outer catches build errors, inner catches runtime errors
+    return Builder(
+      builder: (context) {
+        try {
+          return _buildComponentSafely(context);
+        } catch (e, stack) {
+          Logger().e(
+            'Error building component ${component.type}: $e',
+            stackTrace: stack,
+          );
+          return const SizedBox.shrink();
+        }
+      },
+    );
+  }
+
+  Widget _buildComponentSafely(BuildContext context) {
+    final navigationService = locator<NavigationService>();
+
+    // Validate component type
+    if (component.type == null) {
+      return const SizedBox.shrink();
+    }
+
+    switch (component.type!) {
       case ProductPageComponentType.title:
-        final isValid =
-            (component.title?.isNotEmpty ?? false) || (component.subTitle?.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        return ProductTitle(
-          title: apiTranslate(component.title),
-          subTitle: apiTranslate(component.subTitle),
-        );
+        return _buildTitle();
       case ProductPageComponentType.sectionTitle:
-        final isValid = component.title?.isNotEmpty ?? false;
-        if (!isValid) break;
-
-        return SectionTitle(title: apiTranslate(component.title));
+        return _buildSectionTitle();
       case ProductPageComponentType.imageCarusel:
-        return ImageCarousel(
-          product: product,
-          cdnImages: component.cdnImages ?? [],
-          canUpload: component.canUpload == true,
-          deletableProductImages: userImages,
-        );
+        return _buildImageCarousel();
+      case ProductPageComponentType.buyButton:
+        return _buildBuyButton();
+      case ProductPageComponentType.keyValueTable:
+        return _buildKeyValueTable();
+      case ProductPageComponentType.htmlContent:
+        return _buildHtmlContent();
       case ProductPageComponentType.actionButtons:
-        final links = _filterOutHiddenLinks(component.links);
-        final isValid = links?.isNotEmpty ?? false;
-        if (!isValid) break;
+        return _buildActionButtons(context, navigationService);
+      case ProductPageComponentType.actionLink:
+        return _buildActionLink(context, navigationService);
+      case ProductPageComponentType.menuItem:
+        return _buildMenuItem(context, navigationService);
+      case ProductPageComponentType.rating:
+        return _buildRating(context, navigationService);
+      case ProductPageComponentType.shortcutBand:
+        return _buildShortcutBand(context, navigationService);
+      case ProductPageComponentType.message:
+        return _buildMessage(context, navigationService);
+      case ProductPageComponentType.document:
+        return _buildDocument();
+      case ProductPageComponentType.addressBlock:
+        return _buildAddress();
+      case ProductPageComponentType.items:
+        return _buildItems();
+      case ProductPageComponentType.alert:
+        return _buildAlert(context, navigationService);
+      case ProductPageComponentType.verifiedBanner:
+        return _buildVerifiedBanner();
+      case ProductPageComponentType.searchLinks:
+        return _buildSearchLinks();
+      case ProductPageComponentType.divider:
+        return _buildDivider();
+      case ProductPageComponentType.video:
+        return _buildVideo();
+      case ProductPageComponentType.shareButtons:
+        return _buildShareButtons();
+      case ProductPageComponentType.productWebsite:
+        return _buildProductWebsite(context);
+      default:
+        Logger().w('Unhandled component type: ${component.type}');
+        return const SizedBox.shrink();
+    }
+  }
 
-        final actions =
-            links!
-                .map(
-                  (link) => ProductAction(
-                    text: apiTranslate(link.title!),
-                    icon: link.icon,
-                    onTap: () {
+  Widget _buildTitle() {
+    try {
+      final hasTitle = component.title.isNotBlank;
+      final hasSubTitle = component.subTitle.isNotBlank;
+      
+      if (!hasTitle && !hasSubTitle) {
+        return const SizedBox.shrink();
+      }
+
+      return ProductTitle(
+        title: apiTranslate(component.title),
+        subTitle: apiTranslate(component.subTitle),
+      );
+    } catch (e) {
+      Logger().e('Error building title: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildSectionTitle() {
+    try {
+      if (component.title.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      return SectionTitle(title: apiTranslate(component.title));
+    } catch (e) {
+      Logger().e('Error building section title: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildImageCarousel() {
+    try {
+      return ImageCarousel(
+        product: product,
+        cdnImages: component.cdnImages ?? [],
+        canUpload: component.canUpload == true,
+        deletableProductImages: userImages,
+      );
+    } catch (e) {
+      Logger().e('Error building image carousel: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildBuyButton() {
+    try {
+      return AskAIButton(product: product, isOwned: product.isOwner);
+    } catch (e) {
+      Logger().e('Error building buy button: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildKeyValueTable() {
+    try {
+      if (component.tableContents?.isEmpty ?? true) {
+        return const SizedBox.shrink();
+      }
+
+      return KeyValueTable(
+        title: apiTranslate(component.title),
+        tableContents: component.tableContents!,
+        allowCopy: component.allowCopy == true,
+      );
+    } catch (e) {
+      Logger().e('Error building key value table: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildHtmlContent() {
+    try {
+      if (component.content.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      return HtmlContent(
+        content: component.content!,
+        clamping: component.clamping == true,
+      );
+    } catch (e) {
+      Logger().e('Error building HTML content: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildActionButtons(BuildContext context, NavigationService navigationService) {
+    try {
+      final links = _filterHiddenLinks(component.links);
+      if (links?.isEmpty ?? true) {
+        return const SizedBox.shrink();
+      }
+
+      final actions = links!
+          .map((link) {
+            try {
+              return ProductAction(
+                text: apiTranslate(link.title),
+                icon: link.icon,
+                onTap: () {
+                  try {
+                    if (link.href?.isNotEmpty ?? false) {
                       navigationService.productPageNavigate(
                         context,
                         product,
                         link.href!,
                         link.openInModal,
                       );
-                    },
-                  ),
-                )
-                .toList();
-
-        if (actions.isNotEmpty) {
-          return ProductActionButtonsList(actions: actions, showTopShadow: true);
-        }
-        break;
-      case ProductPageComponentType.rating:
-        final isValid =
-            (component.link?.title?.isNotEmpty ?? false) &&
-            (component.rating != null && component.rating?.type != null);
-        if (!isValid) break;
-
-        final index = components.indexOf(component);
-        final isPreviousComponentRating =
-            index > 0 && components[index - 1].type == ProductPageComponentType.rating;
-        final isNextComponentRating =
-            components.length > index + 1 &&
-            components[index + 1].type == ProductPageComponentType.rating;
-
-        return ProductRating(
-          title: apiTranslate(component.link!.title!),
-          iconName: component.link?.icon,
-          rating: component.rating!.value,
-          ratingType: component.rating!.type!,
-          isFirst: !isPreviousComponentRating && isNextComponentRating,
-          isMiddle: isPreviousComponentRating && isNextComponentRating,
-          isLast: !isNextComponentRating && isPreviousComponentRating,
-          onTap:
-              (component.link?.href?.isNotEmpty ?? false)
-                  ? () {
-                    navigationService.productPageNavigate(
-                      context,
-                      product,
-                      component.link!.href!,
-                      component.link!.openInModal,
-                    );
+                    }
+                  } catch (e) {
+                    Logger().e('Error in action button tap: $e');
                   }
-                  : null,
-        );
-      case ProductPageComponentType.shortcutBand:
-        final List<ShortcutItem>? shortcuts =
-            _filterOutHiddenLinks(component.links)?.map((link) {
-              final backgroundColor =
-                  (link.color?.isNotEmpty ?? false)
-                      ? TingsColors.fromString(link.color!)
-                      : TingsColors.primary;
+                },
+              );
+            } catch (e) {
+              Logger().e('Error creating action: $e');
+              return null;
+            }
+          })
+          .whereType<ProductAction>()
+          .toList();
+
+      if (actions.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return ProductActionButtonsList(actions: actions, showTopShadow: true);
+    } catch (e) {
+      Logger().e('Error building action buttons: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildActionLink(BuildContext context, NavigationService navigationService) {
+    try {
+      final link = component.link;
+      if (link == null) {
+        return const SizedBox.shrink();
+      }
+      
+      final titleEmpty = link.title == null || link.title!.isEmpty;
+      final hrefEmpty = link.href == null || link.href!.isEmpty;
+      
+      if (titleEmpty || hrefEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              try {
+                navigationService.productPageNavigate(
+                  context,
+                  product,
+                  link.href!,
+                  link.openInModal,
+                );
+              } catch (e) {
+                Logger().e('Error in action link tap: $e');
+              }
+            },
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(apiTranslate(link.title!)),
+          ),
+        ),
+      );
+    } catch (e) {
+      Logger().e('Error building action link: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildMenuItem(BuildContext context, NavigationService navigationService) {
+    try {
+      final link = component.link;
+      if (link == null || link.title.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      final index = allComponents.indexOf(component);
+      final isPreviousMenuItem = index > 0 &&
+          allComponents[index - 1].type == ProductPageComponentType.menuItem;
+
+      return ProductMenuItem(
+        title: apiTranslate(link.title!),
+        iconName: link.icon,
+        dividerTop: !isPreviousMenuItem,
+        onTap: link.href.isNotBlank
+            ? () {
+                try {
+                  navigationService.productPageNavigate(
+                    context,
+                    product,
+                    link.href!,
+                    link.openInModal,
+                  );
+                } catch (e) {
+                  Logger().e('Error in menu item tap: $e');
+                }
+              }
+            : null,
+      );
+    } catch (e) {
+      Logger().e('Error building menu item: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildRating(BuildContext context, NavigationService navigationService) {
+    try {
+      final link = component.link;
+      if (link == null || 
+          link.title.isBlank ||
+          component.rating == null ||
+          component.rating?.type == null) {
+        return const SizedBox.shrink();
+      }
+
+      final index = allComponents.indexOf(component);
+      final isPreviousRating = index > 0 &&
+          allComponents[index - 1].type == ProductPageComponentType.rating;
+      final isNextRating = index + 1 < allComponents.length &&
+          allComponents[index + 1].type == ProductPageComponentType.rating;
+
+      final rating = component.rating;
+      if (rating == null || rating.type == null) {
+        return const SizedBox.shrink();
+      }
+      
+      return ProductRating(
+        title: apiTranslate(link.title!),
+        iconName: link.icon,
+        rating: rating.value,
+        ratingType: rating.type!,
+        isFirst: !isPreviousRating && isNextRating,
+        isMiddle: isPreviousRating && isNextRating,
+        isLast: !isNextRating && isPreviousRating,
+        onTap: link.href.isNotBlank
+            ? () {
+                try {
+                  navigationService.productPageNavigate(
+                    context,
+                    product,
+                    link.href!,
+                    link.openInModal,
+                  );
+                } catch (e) {
+                  Logger().e('Error in rating tap: $e');
+                }
+              }
+            : null,
+      );
+    } catch (e) {
+      Logger().e('Error building rating: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildShortcutBand(BuildContext context, NavigationService navigationService) {
+    try {
+      final links = _filterHiddenLinks(component.links);
+      if (links?.isEmpty ?? true) {
+        return const SizedBox.shrink();
+      }
+
+      final shortcuts = links!
+          .map((link) {
+            try {
+              final backgroundColor = (link.color?.isNotEmpty ?? false)
+                  ? TingsColors.fromString(link.color!)
+                  : TingsColors.primary;
               return ShortcutItem(
                 backgroundColor: backgroundColor,
                 color: TingsColors.textColorFromBackgroundColor(backgroundColor),
                 iconName: link.icon ?? '',
                 title: apiTranslate(link.title!),
                 onTap: () {
-                  if (link.href?.isNotEmpty ?? false) {
-                    navigationService.productPageNavigate(
-                      context,
-                      product,
-                      link.href!,
-                      link.openInModal,
-                    );
+                  try {
+                    if (link.href?.isNotEmpty ?? false) {
+                      navigationService.productPageNavigate(
+                        context,
+                        product,
+                        link.href!,
+                        link.openInModal,
+                      );
+                    }
+                  } catch (e) {
+                    Logger().e('Error in shortcut tap: $e');
                   }
                 },
               );
-            }).toList();
+            } catch (e) {
+              Logger().e('Error creating shortcut: $e');
+              return null;
+            }
+          })
+          .whereType<ShortcutItem>()
+          .toList();
 
-        if (shortcuts != null && shortcuts.isNotEmpty) {
-          return ShortcutList(shortcuts: shortcuts);
-        }
-        break;
-      case ProductPageComponentType.message:
-        final isValid = component.link?.title?.isNotEmpty ?? false;
-        if (!isValid) break;
+      if (shortcuts.isEmpty) {
+        return const SizedBox.shrink();
+      }
 
-        final backgroundColor =
-            (component.link?.color?.isNotEmpty ?? false)
-                ? TingsColors.fromString(component.link!.color!)
-                : TingsColors.grayMedium;
-
-        return ProductMarketingMessage(
-          backgroundColor: backgroundColor,
-          textColor: TingsColors.textColorFromBackgroundColor(backgroundColor),
-          imageUrl: component.cdnImages?.first.getThumbnail(),
-          message: apiTranslate(component.link!.title!),
-          onReadMore:
-              component.link?.href?.isNotEmpty ?? false
-                  ? () {
-                    navigationService.productPageNavigate(
-                      context,
-                      product,
-                      component.link!.href!,
-                      component.link!.openInModal,
-                    );
-                  }
-                  : null,
-        );
-      case ProductPageComponentType.menuItem:
-        final isValid = component.link?.title?.isNotEmpty ?? false;
-        if (!isValid) break;
-
-        final index = components.indexOf(component);
-        final isPreviousComponentMenuItem =
-            index > 0 && components[index - 1].type == ProductPageComponentType.menuItem;
-
-        return ProductMenuItem(
-          title: apiTranslate(component.link!.title!),
-          iconName: component.link?.icon,
-          dividerTop: !isPreviousComponentMenuItem,
-          onTap:
-              component.link?.href?.isNotEmpty ?? false
-                  ? () {
-                    navigationService.productPageNavigate(
-                      context,
-                      product,
-                      component.link!.href!,
-                      component.link!.openInModal,
-                    );
-                  }
-                  : null,
-        );
-      case ProductPageComponentType.htmlContent:
-        final isValid = component.content?.isNotEmpty ?? false;
-        if (!isValid) break;
-
-        return HtmlContent(content: component.content!, clamping: component.clamping == true);
-      case ProductPageComponentType.document:
-        final isValid =
-            (component.title?.isNotEmpty ?? false) && (component.link?.href?.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        return ProductFile(
-          title: component.title!,
-          description: component.subTitle,
-          fileUrl: component.link!.href!,
-        );
-      case ProductPageComponentType.actionLink:
-        final isValid =
-            (component.link?.title?.isNotEmpty ?? false) &&
-            (component.link?.href?.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: ElevatedButton(
-            onPressed:
-                () => navigationService.productPageNavigate(
-                  context,
-                  product,
-                  component.link!.href!,
-                  component.link!.openInModal,
-                ),
-            style: DesignSystemComponents.primaryButton(),
-            child: Text(apiTranslate(component.link!.title!)),
-          ),
-        );
-      case ProductPageComponentType.keyValueTable:
-        final isValid = component.tableContents?.isNotEmpty ?? false;
-        if (!isValid) break;
-
-        return KeyValueTable(
-          title: apiTranslate(component.title),
-          tableContents: component.tableContents!,
-          allowCopy: component.allowCopy == true,
-        );
-      case ProductPageComponentType.addressBlock:
-        final isValid =
-            (component.title?.isNotEmpty ?? false) &&
-            (component.contact?.location.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        final index = components.indexOf(component);
-        final isNextComponentAddress =
-            components.length > index + 1 &&
-            components[index + 1].type == ProductPageComponentType.addressBlock;
-        return Address(
-          title: component.title!,
-          address: component.contact!.location,
-          email: component.contact?.email,
-          websiteUrl: component.contact?.website,
-          phone: component.contact?.phone,
-          iconName: component.link?.icon,
-          showDivider: isNextComponentAddress,
-        );
-      case ProductPageComponentType.items:
-        final isValid = (component.contentUrl?.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        return ProductItems(productId: product.id, contentUrl: component.contentUrl!);
-      case ProductPageComponentType.alert:
-        final isValid = (component.title?.isNotEmpty ?? false);
-        if (!isValid) break;
-
-        final backgroundColor =
-            (component.link?.color?.isNotEmpty ?? false)
-                ? TingsColors.fromString(component.link!.color!)
-                : TingsColors.blueMedium;
-
-        return AlertMessage(
-          title: apiTranslate(component.title!),
-          subTitle: apiTranslate(component.subTitle),
-          iconName: component.link?.icon,
-          backgroundColor: backgroundColor,
-          textColor: TingsColors.textColorFromBackgroundColor(backgroundColor),
-          onTap:
-              component.link?.href?.isNotEmpty ?? false
-                  ? () {
-                    navigationService.productPageNavigate(
-                      context,
-                      product,
-                      component.link!.href!,
-                      component.link!.openInModal,
-                    );
-                  }
-                  : null,
-        );
-      case ProductPageComponentType.verifiedBanner:
-        final isValid = product.brand.isNotBlank;
-        if (!isValid) break;
-
-        return VerifiedBanner(brandName: product.brand);
-      case ProductPageComponentType.searchLinks:
-        final isValid = component.searchLinksContent?.isNotEmpty ?? false;
-        if (!isValid) break;
-
-        return SearchLinks(links: component.searchLinksContent!, product: product);
-      case ProductPageComponentType.buyButton:
-        return AskAIButton(
-          product: product,
-          isOwned: product.isOwner,
-        );
-
-      case ProductPageComponentType.divider:
-        final isValid = component.divider != null;
-        if (!isValid) break;
-
-        final color =
-            component.divider!.color != null
-                ? TingsColors.fromString(component.divider!.color!)
-                : TingsColors.transparent;
-
-        return TingDivider(height: component.divider!.height, color: color);
-
-      case ProductPageComponentType.video:
-        final isValid = component.video != null && component.video!.videoUrl.startsWith('http');
-        if (!isValid) break;
-
-        return VideoPreviewLink(
-          videoUrl: component.video!.videoUrl,
-          title: apiTranslate(component.video!.title),
-          previewImage: component.video!.previewImage,
-        );
-
-      case ProductPageComponentType.shareButtons:
-        final isValid = component.content.isNotBlank;
-        if (!isValid) break;
-
-        return ShareButtonsSection(content: component.content!);
-
-      case ProductPageComponentType.productWebsite:
-        final isLastComponent = (components.indexOf(component) + 1) == components.length;
-
-        if (!isLastComponent) {
-          Logger().w(
-            'ProductWebsite component must be last element of a page, ${(components.indexOf(component) + 1)} , ${components.length}',
-          );
-
-          break;
-        }
-
-        final isValid = isLastComponent && component.contentUrl.isNotBlank;
-        if (!isValid) break;
-
-        return ProductWebsiteView(
-          title: apiTranslate(component.title),
-          url: component.contentUrl!,
-          onFocus: () => scrollToBottom(),
-          onScrollTop: () => scrollUp(),
-        );
-      default:
-        throw UnimplementedError();
+      return ShortcutList(shortcuts: shortcuts);
+    } catch (e) {
+      Logger().e('Error building shortcut band: $e');
+      return const SizedBox.shrink();
     }
-  } catch (e, stack) {
-    Logger().e(
-      'Could not parse component ${component.type.toString()}',
-      stackTrace: stack,
-      error: e,
-    );
   }
 
-  return Container();
-}
+  Widget _buildMessage(BuildContext context, NavigationService navigationService) {
+    try {
+      final link = component.link;
+      if (link == null || link.title.isBlank) {
+        return const SizedBox.shrink();
+      }
 
-List<ProductPageComponentLinkModel>? _filterOutHiddenLinks(
-  List<ProductPageComponentLinkModel>? links,
-) => links?.where((link) => link.hidden != true).toList();
+      final backgroundColor = link.color.isNotBlank
+          ? TingsColors.fromString(link.color!)
+          : TingsColors.grayMedium;
+
+      final cdnImages = component.cdnImages;
+      final imageUrl = (cdnImages?.isNotEmpty ?? false)
+          ? cdnImages!.first.getThumbnail()
+          : null;
+      
+      return ProductMarketingMessage(
+        backgroundColor: backgroundColor,
+        textColor: TingsColors.textColorFromBackgroundColor(backgroundColor),
+        imageUrl: imageUrl,
+        message: apiTranslate(link.title!),
+        onReadMore: link.href.isNotBlank
+            ? () {
+                try {
+                  navigationService.productPageNavigate(
+                    context,
+                    product,
+                    link.href!,
+                    link.openInModal,
+                  );
+                } catch (e) {
+                  Logger().e('Error in message read more: $e');
+                }
+              }
+            : null,
+      );
+    } catch (e) {
+      Logger().e('Error building message: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildDocument() {
+    try {
+      final link = component.link;
+      if (component.title.isBlank || link == null || link.href.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      return ProductFile(
+        title: component.title!,
+        description: component.subTitle,
+        fileUrl: link.href!,
+      );
+    } catch (e) {
+      Logger().e('Error building document: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildAddress() {
+    try {
+      final contact = component.contact;
+      if (component.title.isBlank || contact == null || contact.location.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      final index = allComponents.indexOf(component);
+      final isNextAddress = index + 1 < allComponents.length &&
+          allComponents[index + 1].type == ProductPageComponentType.addressBlock;
+
+      return Address(
+        title: component.title!,
+        address: contact.location,
+        email: contact.email,
+        websiteUrl: contact.website,
+        phone: contact.phone,
+        iconName: component.link?.icon,
+        showDivider: isNextAddress,
+      );
+    } catch (e) {
+      Logger().e('Error building address: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildItems() {
+    try {
+      if (component.contentUrl.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      return ProductItems(productId: product.id, contentUrl: component.contentUrl!);
+    } catch (e) {
+      Logger().e('Error building items: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildAlert(BuildContext context, NavigationService navigationService) {
+    try {
+      final link = component.link;
+      if (component.title.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      final backgroundColor = link?.color.isNotBlank == true
+          ? TingsColors.fromString(link!.color!)
+          : TingsColors.blueMedium;
+
+      return AlertMessage(
+        title: apiTranslate(component.title!),
+        subTitle: apiTranslate(component.subTitle),
+        iconName: link?.icon,
+        backgroundColor: backgroundColor,
+        textColor: TingsColors.textColorFromBackgroundColor(backgroundColor),
+        onTap: link?.href.isNotBlank == true
+            ? () {
+                try {
+                  navigationService.productPageNavigate(
+                    context,
+                    product,
+                    link!.href!,
+                    link.openInModal,
+                  );
+                } catch (e) {
+                  Logger().e('Error in alert tap: $e');
+                }
+              }
+            : null,
+      );
+    } catch (e) {
+      Logger().e('Error building alert: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildVerifiedBanner() {
+    try {
+      if (product.brand.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return VerifiedBanner(brandName: product.brand);
+    } catch (e) {
+      Logger().e('Error building verified banner: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildSearchLinks() {
+    try {
+      if (component.searchLinksContent?.isEmpty ?? true) {
+        return const SizedBox.shrink();
+      }
+
+      return SearchLinks(links: component.searchLinksContent!, product: product);
+    } catch (e) {
+      Logger().e('Error building search links: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildDivider() {
+    try {
+      final divider = component.divider;
+      if (divider == null) {
+        return const SizedBox.shrink();
+      }
+
+      final color = divider.color.isNotBlank
+          ? TingsColors.fromString(divider.color!)
+          : TingsColors.transparent;
+
+      return TingDivider(height: divider.height, color: color);
+    } catch (e) {
+      Logger().e('Error building divider: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildVideo() {
+    try {
+      final video = component.video;
+      if (video == null || !video.videoUrl.startsWith('http')) {
+        return const SizedBox.shrink();
+      }
+
+      return VideoPreviewLink(
+        videoUrl: video.videoUrl,
+        title: apiTranslate(video.title),
+        previewImage: video.previewImage,
+      );
+    } catch (e) {
+      Logger().e('Error building video: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildShareButtons() {
+    try {
+      if (component.content.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      return ShareButtonsSection(content: component.content!);
+    } catch (e) {
+      Logger().e('Error building share buttons: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildProductWebsite(BuildContext context) {
+    try {
+      final index = allComponents.indexOf(component);
+      final isLast = index + 1 == allComponents.length;
+
+      if (!isLast) {
+        Logger().w(
+          'ProductWebsite must be last component. Position: ${index + 1}/${allComponents.length}',
+        );
+        return const SizedBox.shrink();
+      }
+
+      if (component.contentUrl.isBlank) {
+        return const SizedBox.shrink();
+      }
+
+      // Safe scroll controller access
+      void safeScrollToBottom() {
+        try {
+          if (scrollController.hasClients && scrollController.position.hasContentDimensions) {
+            scrollController.animateTo(
+              scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeInOut,
+            );
+          }
+        } catch (e) {
+          Logger().e('Error scrolling to bottom: $e');
+        }
+      }
+
+      void safeScrollUp() {
+        try {
+          if (scrollController.hasClients && scrollController.position.hasContentDimensions) {
+            final screenHeight = MediaQuery.of(context).size.height;
+            final target = scrollController.position.maxScrollExtent - screenHeight + 95;
+            if (target >= 0) {
+              scrollController.animateTo(
+                target,
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeInOut,
+              );
+            }
+          }
+        } catch (e) {
+          Logger().e('Error scrolling up: $e');
+        }
+      }
+
+      return ProductWebsiteView(
+        title: apiTranslate(component.title),
+        url: component.contentUrl!,
+        onFocus: safeScrollToBottom,
+        onScrollTop: safeScrollUp,
+      );
+    } catch (e) {
+      Logger().e('Error building product website: $e');
+      return const SizedBox.shrink();
+    }
+  }
+
+  List<ProductPageComponentLinkModel>? _filterHiddenLinks(
+      List<ProductPageComponentLinkModel>? links) {
+    try {
+      return links?.where((link) => link.hidden != true).toList();
+    } catch (e) {
+      Logger().e('Error filtering hidden links: $e');
+      return null;
+    }
+  }
+}

@@ -1,9 +1,9 @@
-import 'package:thap/data/network/api/app_api.dart';
 import 'package:thap/data/repository/app_repository.dart';
 import 'package:thap/models/app_data.dart';
+import 'package:thap/services/service_locator.dart';
 
 class DemoAppRepository extends AppRepository {
-  DemoAppRepository() : super(null as AppApi);
+  DemoAppRepository() : super(locator());
   @override
   Future<AppDataModel> getData() async {
     await Future.delayed(const Duration(milliseconds: 300));

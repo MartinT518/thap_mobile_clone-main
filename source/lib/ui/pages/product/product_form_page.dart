@@ -167,10 +167,11 @@ class ProductFormPage extends HookWidget {
                 const SizedBox(height: 28),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.saveAndValidate()) {
+                    final formState = _formKey.currentState;
+                    if (formState != null && formState.saveAndValidate()) {
                       List<KeyValueData> registrationData = [];
 
-                      _formKey.currentState!.value.forEach((key, value) {
+                      formState.value.forEach((key, value) {
                         registrationData.add(
                           KeyValueData(key: key, value: value.toString()),
                         );

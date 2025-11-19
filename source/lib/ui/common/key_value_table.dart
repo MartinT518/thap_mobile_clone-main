@@ -27,66 +27,62 @@ class KeyValueTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (title?.trim().isNotEmpty ?? false)
-          _buildItemContainer(Row(
-            children: [
-              Heading3(title!),
-            ],
-          )),
-        ...tableContents
-            .where((e) => e['value']?.isNotEmpty ?? false)
-            .map(
-              (e) => _buildItemContainer(
-                RowHitTestWithoutSizeLimit(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 14),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width / 2.5),
-                        child: ContentBig(
-                          apiTranslate(e['key']!),
-                        ),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (title?.trim().isNotEmpty ?? false)
+        _buildItemContainer(Row(
+          children: [
+            Heading3(title!),
+          ],
+        )),
+      ...tableContents
+          .where((e) => e['value']?.isNotEmpty ?? false)
+          .map(
+            (e) => _buildItemContainer(
+              RowHitTestWithoutSizeLimit(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 14),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width / 2.5),
+                      child: ContentBig(
+                        apiTranslate(e['key']!),
                       ),
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onLongPress: () {
-                          _copyValue(e);
-                        },
-                        child: ContentBig(
-                          e['value']!,
-                          textAlign: TextAlign.right,
-                        ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onLongPress: () {
+                        _copyValue(e);
+                      },
+                      child: ContentBig(
+                        e['value']!,
+                        textAlign: TextAlign.right,
                       ),
                     ),
-                    if (!allowCopy) // No title, show copy button for value
-                      TapArea(
-                        extraTapArea: const EdgeInsets.only(
-                            right: 14, top: 16, bottom: 14, left: 4),
-                        onTap: () {
-                          _copyValue(e);
-                        },
-                        child: const Padding(
-                          padding: EdgeInsets.only(left: 14),
-                          child: TingIcon(
-                            'files_file-copy',
-                            width: 20,
-                          ),
+                  ),
+                  if (!allowCopy) // No title, show copy button for value
+                    TapArea(
+                      extraTapArea: const EdgeInsets.only(
+                          right: 14, top: 16, bottom: 14, left: 4),
+                      onTap: () {
+                        _copyValue(e);
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 14),
+                        child: TingIcon(
+                          'files_file-copy',
+                          width: 20,
                         ),
-                      )
-                  ],
-                ),
+                      ),
+                    )
+                ],
               ),
-            )
-            
-      ]),
-    );
+            ),
+          )
+    ]);
   }
 
   void _copyValue(Map<String, String> e) {

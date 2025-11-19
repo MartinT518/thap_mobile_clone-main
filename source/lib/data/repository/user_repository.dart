@@ -51,9 +51,18 @@ class UserRepository {
     }
   }
 
-  Future<void> updateProfileData(
-      {String? countryCode, String? languageCode}) async {
-    final response = await _api.updateProfileData(countryCode, languageCode);
+  Future<void> updateProfileData({
+    String? countryCode,
+    String? languageCode,
+    bool? allowFeedback,
+    bool? consentMarketing,
+  }) async {
+    final response = await _api.updateProfileData(
+      countryCode,
+      languageCode,
+      allowFeedback,
+      consentMarketing,
+    );
 
     if (response.statusCode != 200) {
       throw Exception('Could not update user profile data');

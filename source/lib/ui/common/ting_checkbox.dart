@@ -21,6 +21,12 @@ class TingCheckbox extends HookWidget {
   Widget build(BuildContext context) {
     final checkedInternal = useState<bool>(checked);
 
+    // Sync internal state with prop changes
+    useEffect(() {
+      checkedInternal.value = checked;
+      return null;
+    }, [checked]);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(

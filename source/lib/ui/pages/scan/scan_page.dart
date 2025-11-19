@@ -94,7 +94,7 @@ class ScanPage extends HookWidget {
                   return;
                 }
 
-                debugPrint('Processing barcode: ${barcode.rawValue} ${barcode.format}');
+                // Processing barcode: ${barcode.rawValue} ${barcode.format}
 
                 isProcessing.value = true;
 
@@ -131,7 +131,7 @@ class ScanPage extends HookWidget {
                 buffer.value = [];
                 scanHistory.value.add(barcodeRaw);
 
-                debugPrint('Barcode END! Code: $barcodeRaw, Format: $format.');
+                // Barcode processed: Code: $barcodeRaw, Format: $format
               },
             ),
           ),

@@ -64,6 +64,33 @@ class TingsImage extends StatelessWidget {
         memCacheHeight: memCacheHeight,
         colorBlendMode: colorBlendMode,
         color: color,
+        errorWidget: (context, url, error) {
+          // Gracefully handle network errors (e.g., DNS failures, timeouts)
+          // Show a placeholder icon instead of breaking the UI
+          return Container(
+            width: width,
+            height: height,
+            color: Colors.grey[200],
+            child: Icon(
+              Icons.image_not_supported,
+              size: (width != null && height != null)
+                  ? (width! < height! ? width! * 0.4 : height! * 0.4)
+                  : 48,
+              color: Colors.grey[400],
+            ),
+          );
+        },
+        placeholder: (context, url) {
+          // Show loading indicator while image loads
+          return Container(
+            width: width,
+            height: height,
+            color: Colors.grey[100],
+            child: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        },
       );
     }
 
@@ -77,6 +104,42 @@ class TingsImage extends StatelessWidget {
       cacheHeight: height != null ? (height! * 2).round() : null,
       colorBlendMode: colorBlendMode,
       color: color,
+      errorBuilder: (context, error, stackTrace) {
+        // Gracefully handle network errors (e.g., DNS failures, timeouts)
+        // Show a placeholder icon instead of breaking the UI
+        return Container(
+          width: width,
+          height: height,
+          color: Colors.grey[200],
+          child: Icon(
+            Icons.image_not_supported,
+            size: (width != null && height != null)
+                ? (width! < height! ? width! * 0.4 : height! * 0.4)
+                : 48,
+            color: Colors.grey[400],
+          ),
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        // Show loading indicator while image loads
+        if (loadingProgress == null) {
+          return child;
+        }
+        return Container(
+          width: width,
+          height: height,
+          color: Colors.grey[100],
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          ),
+        );
+      },
     );
   }
 }

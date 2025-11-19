@@ -45,12 +45,15 @@ class FeedPage extends HookWidget {
                           separatorBuilder:
                               (context, index) => const TingDivider(),
                           scrollDirection: Axis.vertical,
-                          itemCount: feedMessagesSnapshot.data!.length,
+                          itemCount: feedMessagesSnapshot.data?.length ?? 0,
                           itemBuilder:
-                              (_, int index) => buildFeedItem(
-                                context,
-                                feedMessagesSnapshot.data![index],
-                              ),
+                              (_, int index) {
+                                final data = feedMessagesSnapshot.data;
+                                if (data == null || index >= data.length) {
+                                  return const SizedBox.shrink();
+                                }
+                                return buildFeedItem(context, data[index]);
+                              },
                         )
                         : SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(

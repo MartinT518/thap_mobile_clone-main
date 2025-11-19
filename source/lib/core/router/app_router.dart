@@ -7,6 +7,8 @@ import 'package:thap/features/auth/presentation/providers/auth_provider.dart';
 import 'package:thap/features/products/presentation/pages/scan_page.dart';
 import 'package:thap/features/products/presentation/pages/product_detail_page.dart';
 import 'package:thap/features/wallet/presentation/pages/my_things_page.dart';
+import 'package:thap/services/navigation_service.dart';
+import 'package:thap/services/service_locator.dart';
 import 'package:thap/ui/pages/home_page.dart';
 
 /// App router configuration using GoRouter
@@ -15,6 +17,7 @@ class AppRouter {
 
   static GoRouter createRouter(WidgetRef ref) {
     return GoRouter(
+      navigatorKey: locator<NavigationService>().navigatorKey,
       initialLocation: '/login',
       debugLogDiagnostics: true,
       refreshListenable: GoRouterRefreshNotifier(ref),
@@ -91,13 +94,8 @@ class GoRouterRefreshNotifier extends ChangeNotifier {
   final WidgetRef _ref;
 
   GoRouterRefreshNotifier(this._ref) {
-    // Listen to auth state changes and notify GoRouter to refresh
-    _ref.listen(
-      authProvider,
-      (previous, next) {
-        notifyListeners();
-      },
-    );
+    // Note: ref.listen cannot be called in constructor
+    // TODO: Refactor to use ref.watch or manual subscription if needed
+    // For now, router refresh happens via manual navigation
   }
 }
-

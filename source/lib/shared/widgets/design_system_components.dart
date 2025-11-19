@@ -21,7 +21,7 @@ class DesignSystemComponents {
     return ElevatedButton.styleFrom(
       backgroundColor: backgroundColor ?? AppTheme.primaryBlue500,
       foregroundColor: foregroundColor ?? Colors.white,
-      minimumSize: const Size(double.infinity, 48), // Design System: 48px height
+      minimumSize: const Size(0, 48), // Design System: 48px height, width flexible
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM), // 16px
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusPill), // 24px
@@ -44,7 +44,7 @@ class DesignSystemComponents {
   }) {
     return OutlinedButton.styleFrom(
       foregroundColor: textColor ?? AppTheme.primaryBlue500,
-      minimumSize: const Size(double.infinity, 48),
+      minimumSize: const Size(0, 48), // Width flexible, 48px height
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM),
       side: BorderSide(
         width: 2,
@@ -87,7 +87,7 @@ class DesignSystemComponents {
     return ElevatedButton.styleFrom(
       backgroundColor: AppTheme.primaryBlue500,
       foregroundColor: Colors.white,
-      minimumSize: const Size(double.infinity, 56), // Design System: 56px
+      minimumSize: const Size(0, 56), // Design System: 56px height, width flexible
       padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusXXL), // 28px

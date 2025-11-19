@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:logger/logger.dart';
 import 'package:thap/models/ai_provider.dart';
 import 'package:thap/services/ai_service.dart';
 import 'package:thap/services/ai_settings_service.dart';
@@ -28,89 +29,154 @@ class AISettingsPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final aiSettingsService = locator<AISettingsService>();
-    final navigationService = locator<NavigationService>();
-    final selectedProvider = useState<AIProvider?>(null);
-    final isConfigured = useState<bool>(false);
+    try {
+      final aiSettingsService = locator<AISettingsService>();
+      final navigationService = locator<NavigationService>();
+      final selectedProvider = useState<AIProvider?>(null);
+      final isConfigured = useState<bool>(false);
 
-    useEffect(() {
-      Future.microtask(() async {
-        final provider = await aiSettingsService.getSelectedProvider();
-        selectedProvider.value = provider;
-        if (provider != null) {
-          isConfigured.value =
-              await aiSettingsService.isProviderConfigured(provider);
-        }
-      });
-      return null;
-    }, []);
+      useEffect(() {
+        Future.microtask(() async {
+          try {
+            final provider = await aiSettingsService.getSelectedProvider();
+            selectedProvider.value = provider;
+            if (provider != null) {
+              isConfigured.value =
+                  await aiSettingsService.isProviderConfigured(provider);
+            }
+          } catch (e) {
+            Logger().e('Error loading AI settings: $e');
+          }
+        });
+        return null;
+      }, []);
 
-    return Scaffold(
-      appBar: AppHeaderBar(
-        showBackButton: true,
-        title: 'AI Assistant Settings',
-      ),
-      body: SafeArea(
-        bottom: true,
-        child: Container(
-          color: TingsColors.grayLight,
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Heading4('Choose your preferred AI/LLM'),
-              ),
-              Expanded(
-                child: FutureBuilder<Map<AIProvider, bool>>(
-                  future: _loadProviderStatus(aiSettingsService),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    
-                    final providerStatus = snapshot.data!;
-                    
-                    return ListView(
-                      physics: const BouncingScrollPhysics(),
-                      cacheExtent: 500, // Performance: Pre-render items off-screen
-                      children: AIProvider.values.map((providerOption) {
-                        final isInstalled = providerStatus[providerOption] ?? false;
-                        
-                        return ProductMenuItem(
-                          title: providerOption.displayName,
-                          trailing: isInstalled
-                              ? const Text(
-                                  'Installed',
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                )
-                              : null,
-                          onTap: () async {
-                            await navigationService.push(
-                              _AIProviderSetup(provider: providerOption),
-                            );
-                            // Refresh status after returning
-                            final updatedProvider =
-                                await aiSettingsService.getSelectedProvider();
-                            selectedProvider.value = updatedProvider;
-                            if (updatedProvider != null) {
-                              isConfigured.value = await aiSettingsService
-                                  .isProviderConfigured(updatedProvider);
-                            }
-                          },
-                        );
-                      }).toList(),
-                    );
-                  },
+      return Scaffold(
+        appBar: AppHeaderBar(
+          showBackButton: true,
+          title: 'AI Assistant Settings',
+        ),
+        body: SafeArea(
+          bottom: true,
+          child: Container(
+            color: TingsColors.grayLight,
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Heading4('Choose your preferred AI/LLM'),
                 ),
+                Expanded(
+                  child: FutureBuilder<Map<AIProvider, bool>>(
+                    future: _loadProviderStatus(aiSettingsService),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        Logger().e('Error loading provider status: ${snapshot.error}');
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Failed to load AI providers'),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Trigger rebuild
+                                  selectedProvider.value = selectedProvider.value;
+                                },
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      
+                      final providerStatus = snapshot.data!;
+                      
+                      return ListView(
+                        physics: const BouncingScrollPhysics(),
+                        cacheExtent: 500,
+                        children: AIProvider.values.map((providerOption) {
+                          final isInstalled = providerStatus[providerOption] ?? false;
+                          
+                          return ProductMenuItem(
+                            title: providerOption.displayName,
+                            trailing: isInstalled
+                                ? const Text(
+                                    'Installed',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  )
+                                : null,
+                            onTap: () async {
+                              try {
+                                await navigationService.push(
+                                  _AIProviderSetup(provider: providerOption),
+                                );
+                                // Refresh status after returning
+                                try {
+                                  final updatedProvider =
+                                      await aiSettingsService.getSelectedProvider();
+                                  selectedProvider.value = updatedProvider;
+                                  if (updatedProvider != null) {
+                                    isConfigured.value = await aiSettingsService
+                                        .isProviderConfigured(updatedProvider);
+                                  }
+                                } catch (e) {
+                                  Logger().e('Error refreshing provider status: $e');
+                                }
+                              } catch (e) {
+                                Logger().e('Error opening provider setup: $e');
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Failed to open setup: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } catch (e, stack) {
+      Logger().e('Error building AI Settings page: $e', stackTrace: stack);
+      return Scaffold(
+        appBar: AppHeaderBar(
+          showBackButton: true,
+          title: 'AI Assistant Settings',
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Failed to load AI Settings'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // This will trigger a rebuild
+                },
+                child: const Text('Retry'),
               ),
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
 

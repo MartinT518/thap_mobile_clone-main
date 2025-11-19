@@ -89,7 +89,7 @@ class RegisterPage extends HookWidget {
     }, [currentLocaleSnapshot, appDataSnapshot]);
 
     if (selectedUserLanguage.value != null) {
-      print(selectedUserLanguage.value);
+      // Selected language: ${selectedUserLanguage.value}
       context.setLocale(Locale(selectedUserLanguage.value!));
     }
 
@@ -109,11 +109,12 @@ class RegisterPage extends HookWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
-                UserInfo(
-                  name: userProfileStore.userProfile!.name,
-                  email: userProfileStore.userProfile!.email,
-                  photoUrl: userProfileStore.userProfile!.photoUrl,
-                ),
+                if (userProfileStore.userProfile != null)
+                  UserInfo(
+                    name: userProfileStore.userProfile!.name,
+                    email: userProfileStore.userProfile!.email,
+                    photoUrl: userProfileStore.userProfile!.photoUrl,
+                  ),
                 const SizedBox(height: 24),
                 Form(
                   key: _formKey,

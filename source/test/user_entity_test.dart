@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:thap/features/auth/domain/entities/user.dart';
-import 'package:thap/models/auth_method.dart';
 
 void main() {
   group('User Entity', () {

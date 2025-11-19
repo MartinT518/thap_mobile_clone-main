@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/data_service.dart';
 import 'package:thap/services/navigation_service.dart';
@@ -23,6 +25,7 @@ class MenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userProfileStore = locator<UserProfileStore>();
     final navigationService = locator<NavigationService>();
+    final userProfile = userProfileStore.userProfile;
 
     return Container(
       color: TingsColors.grayLight,
@@ -30,12 +33,13 @@ class MenuPage extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            UserInfo(
-              name: userProfileStore.userProfile!.name,
-              email: userProfileStore.userProfile!.email,
-              photoUrl: userProfileStore.userProfile!.photoUrl,
-              backgroundColor: TingsColors.grayLight,
-            ),
+            if (userProfile != null)
+              UserInfo(
+                name: userProfile.name,
+                email: userProfile.email,
+                photoUrl: userProfile.photoUrl,
+                backgroundColor: TingsColors.grayLight,
+              ),
             ProductMenuItem(
               title: tr('profile.title'),
               iconName: 'general_person-people-profile-user',
@@ -54,7 +58,37 @@ class MenuPage extends StatelessWidget {
               title: 'AI Assistant Settings',
               iconName: 'general_settings',
               onTap: () {
-                navigationService.push(const AISettingsPage());
+                try {
+                  // Try NavigationService first
+                  final navigator = navigationService.navigatorKey.currentState;
+                  if (navigator != null) {
+                    navigator.push(
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => const AISettingsPage(),
+                      ),
+                    );
+                  } else {
+                    // Fallback: Use Navigator.of(context) directly
+                    Logger().w('NavigationService navigator is null, using Navigator.of(context)');
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => const AISettingsPage(),
+                      ),
+                    );
+                  }
+                } catch (e, stack) {
+                  Logger().e('Error opening AI Settings: $e', stackTrace: stack);
+                  // Show error message if context is still mounted
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Failed to open AI Settings. Please try again.'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
               },
             ),
             ProductMenuItem(

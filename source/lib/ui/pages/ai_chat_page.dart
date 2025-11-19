@@ -81,7 +81,7 @@ class AIChatPage extends HookWidget {
     }
 
     useEffect(() {
-      if (initialQuestion != null && initialQuestion!.isNotEmpty) {
+      if (initialQuestion != null && initialQuestion?.isNotEmpty == true) {
         Future.microtask(() => askQuestion());
       }
       return null;

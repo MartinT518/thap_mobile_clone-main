@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thap/data/repository/my_tings_repository.dart';
 import 'package:thap/models/product_item.dart';
+import 'package:thap/services/service_locator.dart';
 
 /// Stub provider for my tings - to be properly implemented
 final myTingsProvider = StateNotifierProvider<MyTingsNotifier, MyTingsState>((ref) {
@@ -40,13 +42,17 @@ class MyTingsState {
   bool get hasAny => myTings.isNotEmpty || sharedTings.isNotEmpty;
 
   List<ProductItem> get myTingsFiltered {
-    // TODO: Implement tag filtering when tag relationships are available
-    return myTings;
+    if (filterTagId.isEmpty) {
+      return myTings;
+    }
+    return myTings.where((product) => product.tags.contains(filterTagId)).toList();
   }
 
   List<ProductItem> get sharedTingsFiltered {
-    // TODO: Implement tag filtering when tag relationships are available
-    return sharedTings;
+    if (filterTagId.isEmpty) {
+      return sharedTings;
+    }
+    return sharedTings.where((product) => product.tags.contains(filterTagId)).toList();
   }
 
   ProductItem? getTing(String productId) {
@@ -63,14 +69,35 @@ class MyTingsNotifier extends StateNotifier<MyTingsState> {
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true);
-    // TODO: Implement actual data loading
-    await Future.delayed(const Duration(milliseconds: 100));
-    state = state.copyWith(isLoading: false);
+    try {
+      final repo = locator<MyTingsRepository>();
+      final items = await repo.list();
+      final sharedItems = await repo.sharedList();
+      state = state.copyWith(
+        myTings: items,
+        sharedTings: sharedItems,
+        isLoading: false,
+      );
+    } catch (e) {
+      print('Error loading my tings provider: $e');
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> remove(ProductItem product) async {
-    final updated = state.myTings.where((t) => t.id != product.id).toList();
-    state = state.copyWith(myTings: updated);
+    try {
+      if (product.instanceId != null) {
+        final repo = locator<MyTingsRepository>();
+        await repo.delete(product.instanceId!);
+      }
+      final updated = state.myTings.where((t) => t.id != product.id && t.instanceId != product.instanceId).toList();
+      state = state.copyWith(myTings: updated);
+    } catch (e) {
+      print('Error removing product: $e');
+      // Still update UI even if backend call fails
+      final updated = state.myTings.where((t) => t.id != product.id && t.instanceId != product.instanceId).toList();
+      state = state.copyWith(myTings: updated);
+    }
   }
 
   void setFilterTagId(String tagId) {

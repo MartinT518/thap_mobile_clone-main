@@ -1,11 +1,11 @@
-import 'package:thap/data/network/api/user_api.dart';
 import 'package:thap/data/repository/user_repository.dart';
 import 'package:thap/models/product_item.dart';
 import 'package:thap/models/user_data_result.dart';
 import 'package:thap/models/user_feed_message_model.dart';
+import 'package:thap/services/service_locator.dart';
 
 class DemoUserRepository extends UserRepository {
-  DemoUserRepository() : super(null as UserApi);
+  DemoUserRepository() : super(locator());
   @override
   Future<List<ProductItem>> getScanHistory() async {
     await Future.delayed(const Duration(milliseconds: 300));
@@ -28,11 +28,43 @@ class DemoUserRepository extends UserRepository {
     
     return [
       ProductItem(
+        id: '1',
+        barcode: '1234567890123',
+        name: 'Mountain Bike',
+        brand: 'Trek',
+        imageUrl: 'https://via.placeholder.com/300x300.png?text=Mountain+Bike',
+        isOwner: true,
+      ),
+      ProductItem(
         id: '2',
-        barcode: '4548736110281',
-        name: 'Sony WH-1000XM5 Headphones',
-        brand: 'Sony',
-        imageUrl: 'https://via.placeholder.com/300x300.png?text=Sony+Headphones',
+        barcode: '8712581549114',
+        name: 'Smart TV 65"',
+        brand: 'Philips',
+        imageUrl: 'https://via.placeholder.com/300x300.png?text=Philips+Smart+TV',
+        isOwner: true,
+      ),
+      ProductItem(
+        id: '3',
+        barcode: '0194252707050',
+        name: 'MacBook Pro 14"',
+        brand: 'Apple',
+        imageUrl: 'https://via.placeholder.com/300x300.png?text=MacBook+Pro',
+        isOwner: true,
+      ),
+      ProductItem(
+        id: '4',
+        barcode: '0195949142710',
+        name: 'iPhone 16 Pro',
+        brand: 'Apple',
+        imageUrl: 'https://via.placeholder.com/300x300.png?text=iPhone+16+Pro',
+        isOwner: true,
+      ),
+      ProductItem(
+        id: '5',
+        barcode: '5901234567890',
+        name: 'Black T-Shirt',
+        brand: 'H&M',
+        imageUrl: 'https://via.placeholder.com/300x300.png?text=Black+T-Shirt',
         isOwner: true,
       ),
     ];
@@ -56,7 +88,12 @@ class DemoUserRepository extends UserRepository {
   }
 
   @override
-  Future<void> updateProfileData({String? countryCode, String? languageCode}) async {
+  Future<void> updateProfileData({
+    String? countryCode,
+    String? languageCode,
+    bool? allowFeedback,
+    bool? consentMarketing,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
