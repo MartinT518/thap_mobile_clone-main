@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:thap/services/service_locator.dart';
-import 'package:thap/stores/scan_history_store.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:thap/features/scan_history/presentation/providers/scan_history_provider.dart';
+import 'package:thap/features/scan_history/domain/repositories/scan_history_repository.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/deletable.dart';
@@ -10,13 +10,13 @@ import 'package:thap/ui/common/product_page_opener.dart';
 import 'package:thap/ui/common/typography.dart';
 import 'package:thap/ui/pages/my_tings/product_list_item.dart';
 
-class ScanHistoryPage extends StatelessWidget {
-  ScanHistoryPage([Key? key]) : super(key: key);
-
-  final _scanHistoryStore = locator<ScanHistoryStore>();
+class ScanHistoryPage extends ConsumerWidget {
+  const ScanHistoryPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scanHistoryState = ref.watch(scanHistoryProvider);
+
     return Scaffold(
       appBar: AppHeaderBar(showBackButton: true, title: tr('scan.history')),
       body: Container(
@@ -28,38 +28,56 @@ class ScanHistoryPage extends StatelessWidget {
               padding: const EdgeInsets.only(top: 17, bottom: 15, left: 23),
               child: Heading3(tr('scan.history')),
             ),
-            Observer(builder: (_) {
-              return Expanded(
-                  child: Container(
-                decoration: const BoxDecoration(
+            Expanded(
+              child: scanHistoryState.when(
+                data: (scanHistory) => Container(
+                  decoration: const BoxDecoration(
                     border: Border.symmetric(
-                        horizontal: BorderSide(
-                            color: TingsColors.grayMedium, width: 2))),
-                child: ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    separatorBuilder: (context, index) =>
-                        Container(height: 2, color: TingsColors.grayMedium),
-                    scrollDirection: Axis.vertical,
-                    itemCount: _scanHistoryStore.scanHistory.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final product = _scanHistoryStore.scanHistory[index];
-                      return Deletable(
-                        itemId: product.id,
-                        onDeleted: () async {
-                          await _scanHistoryStore.remove(product);
-                        },
-                        child: ProductPageOpener(
-                          product: product,
-                          pageId: 'preview',
-                          child: ProductListItem(
-                              imageUrl: product.imageUrl,
-                              brand: product.brand,
-                              displayName: product.name),
+                      horizontal: BorderSide(
+                        color: TingsColors.grayMedium,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  child: scanHistory.isEmpty
+                      ? Center(
+                          child: ContentBig(tr('scan.no_history')),
+                        )
+                      : ListView.separated(
+                          physics: const BouncingScrollPhysics(),
+                          separatorBuilder: (context, index) =>
+                              Container(height: 2, color: TingsColors.grayMedium),
+                          scrollDirection: Axis.vertical,
+                          itemCount: scanHistory.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final scanItem = scanHistory[index];
+                            final product = scanItem.product;
+                            return Deletable(
+                              itemId: scanItem.scanHistoryId,
+                              onDeleted: () async {
+                                final repository = await ref.read(scanHistoryRepositoryProvider.future);
+                                await repository.removeFromHistory(scanItem.scanHistoryId);
+                                ref.invalidate(scanHistoryProvider); // Refresh the list
+                              },
+                              child: ProductPageOpener(
+                                product: product as dynamic, // ProductItem compatibility
+                                pageId: 'preview',
+                                child: ProductListItem(
+                                  imageUrl: product.imageUrl ?? '',
+                                  brand: product.brand ?? '',
+                                  displayName: product.displayName,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    }),
-              ));
-            })
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: ContentBig('Error: $error'),
+                ),
+              ),
+            ),
           ],
         ),
       ),

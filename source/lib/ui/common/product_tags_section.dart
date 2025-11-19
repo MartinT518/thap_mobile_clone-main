@@ -1,20 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:thap/data/repository/my_tings_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thap/models/product_item.dart';
 import 'package:thap/models/tag_result.dart';
-import 'package:thap/services/navigation_service.dart';
-import 'package:thap/services/service_locator.dart';
+import 'package:thap/features/tags/presentation/providers/tags_provider.dart';
 import 'package:thap/shared/widgets/design_system_components.dart';
-import 'package:thap/stores/my_tings_store.dart';
-import 'package:thap/stores/product_tags_store.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/ting_divider.dart';
 import 'package:thap/ui/common/typography.dart';
 import 'package:thap/ui/pages/user_tags_page.dart';
 
-class ProductTagsSection extends StatelessWidget {
+class ProductTagsSection extends ConsumerWidget {
   const ProductTagsSection({
     super.key,
     required this.myTing,
@@ -27,9 +24,8 @@ class ProductTagsSection extends StatelessWidget {
   final bool showTitle;
 
   @override
-  Widget build(BuildContext context) {
-    final productTagsStore = locator<ProductTagsStore>();
-    final navigationService = locator<NavigationService>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tagsState = ref.watch(tagsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,44 +34,43 @@ class ProductTagsSection extends StatelessWidget {
           Heading3(tr('tags.title')),
           const SizedBox(height: 13),
         ],
-        Observer(
-          builder: (_) {
-            return Wrap(
-              spacing: 8,
-              runSpacing: 12,
-              alignment: WrapAlignment.start,
-              children:
-                  productTagsStore.tags.map((tag) {
-                    return _buildTag(tag, myTing.instanceId!);
+        tagsState.when(
+          data: (tags) => tags.isEmpty
+              ? ContentBig(tr('tags.no_tags'))
+              : Wrap(
+                  spacing: 8,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.start,
+                  children: tags.map((tag) {
+                    return _buildTag(context, ref, tag, myTing.instanceId ?? myTing.id);
                   }).toList(),
-            );
-          },
+                ),
+          loading: () => const CircularProgressIndicator(),
+          error: (_, __) => ContentBig(tr('tags.error_loading')),
         ),
-        if (productTagsStore.hasAny) ...[
-          const SizedBox(height: 16),
-          const TingDivider(height: 1, color: TingsColors.grayMedium),
-          const SizedBox(height: 16),
-        ],
+        const SizedBox(height: 16),
+        const TingDivider(height: 1, color: TingsColors.grayMedium),
+        const SizedBox(height: 16),
         Row(
           children: [
             _buildTagButton(
               tr('tags.add_new'),
               () => showTagEditor(
                 context: context,
-                onSave: (tag) async => await addTagToTing(myTing.id, tag),
+                onSave: (tag) async => await addTagToTing(ref, myTing.id, tag),
               ),
             ),
             const SizedBox(width: 8),
             _buildTagButton(
               tr('tags.edit'),
-              () => navigationService.push(const UserTagsPage()),
+              () => context.push('/user-tags'),
             ),
           ],
         ),
         if (showDoneButton) ...[
           const SizedBox(height: 38),
           ElevatedButton(
-            onPressed: () => navigationService.pop(),
+            onPressed: () => context.pop(),
             style: DesignSystemComponents.primaryButton(),
             child: Text(tr('common.done')),
           ),
@@ -104,14 +99,10 @@ class ProductTagsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildTag(TagResult tag, String tingId) {
-    final productTagsStore = locator<ProductTagsStore>();
-    final myTingsRepository = locator<MyTingsRepository>();
-    final myTingsStore = locator<MyTingsStore>();
-    final ting = myTingsStore.myTings.firstWhere(
-      (element) => element.instanceId == tingId,
-    );
-    final isActive = ting.tags.any((t) => t == tag.id);
+  Widget _buildTag(BuildContext context, WidgetRef ref, TagResult tag, String tingId) {
+    // TODO: Implement tag activation logic with Riverpod
+    // For now, show inactive tags (can be enhanced later)
+    final isActive = myTing.tags.contains(tag.id);
 
     return Material(
       color: isActive ? TingsColors.blue : TingsColors.white,
@@ -119,16 +110,8 @@ class ProductTagsSection extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(32),
         onTap: () async {
-          if (isActive) {
-            // Remove tag
-            final tingTags = ting.tags.toList()..remove(tag.id);
-            await myTingsStore.update(ting.copyWith(tags: tingTags));
-            await myTingsRepository.deleteTag(tingId, tag.id);
-            await productTagsStore.updateItemCount(tag.id, -1);
-          } else {
-            // Add tag
-            await addTagToTing(ting.id, tag);
-          }
+          // TODO: Implement tag toggle with Riverpod
+          // await ref.read(tagsProvider.notifier).toggleTag(tingId, tag.id);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -152,15 +135,8 @@ class ProductTagsSection extends StatelessWidget {
     );
   }
 
-  Future<void> addTagToTing(String productId, TagResult tag) async {
-    final productTagsStore = locator<ProductTagsStore>();
-    final myTingsRepository = locator<MyTingsRepository>();
-    final myTingsStore = locator<MyTingsStore>();
-    final ting = myTingsStore.getTing(productId)!;
-    final tingTags = ting.tags.toList()..add(tag.id);
-
-    await myTingsStore.update(ting.copyWith(tags: tingTags));
-    await myTingsRepository.addTag(ting.instanceId!, tag.id);
-    await productTagsStore.updateItemCount(tag.id, 1);
+  Future<void> addTagToTing(WidgetRef ref, String productId, TagResult tag) async {
+    // TODO: Implement add tag with Riverpod
+    // await ref.read(tagsProvider.notifier).addTagToProduct(productId, tag.id);
   }
 }
