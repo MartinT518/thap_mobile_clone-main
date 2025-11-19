@@ -14,7 +14,19 @@ Do not make changes to the `README.md` file.
 
 ## System Architecture
 
-The application is built with Flutter 3.32.0 and Dart 3.8, utilizing a layered architecture comprising Presentation, State, Service, Repository, and Data layers. MobX is employed for reactive state management, and Dio handles HTTP requests. Localization is managed via EasyLocalization, supporting 14 languages. The UI adheres to Material Design principles with a component-based structure, emphasizing reusability. The Replit deployment strategy involves building a release-mode Flutter web app and serving it statically to ensure stability and performance. A key feature is the "Ask AI" functionality, which integrates with multiple AI providers (OpenAI, Google Gemini, Perplexity, Deepseek) to offer contextual product-related questions and answers, including a "Demo Mode" for testing without real API keys.
+The application is built with Flutter 3.32.0 and Dart 3.8, utilizing a layered architecture comprising Presentation, State, Service, Repository, and Data layers. Currently undergoing migration from MobX/GetIt to Riverpod/GoRouter for modern state management and routing. Dio handles HTTP requests, and localization is managed via EasyLocalization, supporting 14 languages. The UI adheres to Material Design principles with a component-based structure, emphasizing reusability. The Replit deployment strategy involves building a release-mode Flutter web app and serving it statically via the `serve` npm package on port 5000.
+
+**Demo Mode:** The application is currently configured in demo mode (`Env.isDemoMode = true`) which enables automatic authentication bypass for testing purposes. When demo mode is active:
+- Authentication uses `AuthRepositoryDemo` instead of real Google Sign-In
+- Auto-signs in as "Demo User" (demo@example.com) without credentials
+- All AI providers can operate in demo mode without real API keys
+- To disable demo mode for production: `flutter build web --dart-define=DEMO_MODE=false`
+
+**Recent Migration Status (Nov 2025):**
+- ✅ Successfully migrated from MobX to Riverpod for auth, wallet, and scan features
+- ✅ App compiles with zero errors and runs in web preview
+- ⚠️ Legacy GetIt service locator still active for backward compatibility
+- 📋 Next: Complete Riverpod migration for remaining features
 
 ## External Dependencies
 
