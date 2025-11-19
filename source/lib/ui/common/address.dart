@@ -1,10 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:extra_hittest_area/extra_hittest_area.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/service_locator.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/tap_area.dart';
 import 'package:thap/ui/common/ting_divider.dart';

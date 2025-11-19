@@ -30,7 +30,7 @@ class AppRouter {
         GoRoute(
           path: '/home',
           name: 'home',
-          builder: (context, state) => const HomePage(),
+          builder: (context, state) => HomePage(),
         ),
 
         // Scan Route
@@ -89,22 +89,15 @@ class AppRouter {
 /// Helper to refresh GoRouter when auth state changes
 class GoRouterRefreshNotifier extends ChangeNotifier {
   final WidgetRef _ref;
-  late final StreamSubscription<void> _subscription;
 
   GoRouterRefreshNotifier(this._ref) {
-    // Listen to auth state changes
-    _subscription = _ref.listen(
+    // Listen to auth state changes and notify GoRouter to refresh
+    _ref.listen(
       authProvider,
       (previous, next) {
         notifyListeners();
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
   }
 }
 

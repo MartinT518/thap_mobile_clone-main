@@ -9,13 +9,24 @@ import 'package:thap/core/theme/app_theme.dart';
 import 'package:thap/ui/common/colors.dart';
 
 /// Main app widget with Riverpod and GoRouter
-class ThapApp extends ConsumerWidget {
+class ThapApp extends ConsumerStatefulWidget {
   const ThapApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(goRouterProvider);
+  ConsumerState<ThapApp> createState() => _ThapAppState();
+}
 
+class _ThapAppState extends ConsumerState<ThapApp> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = AppRouter.createRouter(ref);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -41,14 +52,9 @@ class ThapApp extends ConsumerWidget {
         theme: AppTheme.lightTheme,
         
         // Router
-        routerConfig: router,
+        routerConfig: _router,
       ),
     );
   }
 }
-
-/// GoRouter provider
-final goRouterProvider = Provider<GoRouter>((ref) {
-  return AppRouter.createRouter(ref);
-});
 

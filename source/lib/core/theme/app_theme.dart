@@ -94,7 +94,7 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusL),
@@ -293,11 +293,10 @@ class AppTheme {
         ),
         type: BottomNavigationBarType.fixed, // Design System: Fixed type
         elevation: 8, // Design System: 8dp
-        iconSize: 24, // Design System: 24x24px
       ),
 
       // Dialog Theme (Design System: Section 5.5)
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: Colors.white, // Design System: White
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(28), // Design System: 28px (not radiusXXL which is 28px)
