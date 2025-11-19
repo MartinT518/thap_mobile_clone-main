@@ -24,6 +24,11 @@ import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/permissions_service.dart';
 import 'package:thap/services/share_service.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/stores/my_tings_store.dart';
+import 'package:thap/stores/product_pages_store.dart';
+import 'package:thap/stores/product_tags_store.dart';
+import 'package:thap/stores/scan_history_store.dart';
+import 'package:thap/stores/user_profile_store.dart';
 
 /// ⚠️ DEPRECATED: Service Locator pattern is deprecated and will be removed in v3.0
 /// 
@@ -63,14 +68,12 @@ class _ServiceLocator {
 final locator = _ServiceLocator();
 
 void setupServiceLocator() {
-  // Stores (Legacy - ALL REMOVED - MobX/GetIt migration complete)
-  // NOTE: All stores have been migrated to Riverpod providers
-  // Use respective Riverpod providers instead:
-  // - MyTingsStore -> walletNotifierProvider
-  // - UserProfileStore -> authProvider
-  // - ScanHistoryStore -> scanHistoryProvider (TODO: create)
-  // - ProductPagesStore -> Remove (use GoRouter directly)
-  // - ProductTagsStore -> tagsProvider (TODO: create)
+  // Legacy Stub Stores (backward compatibility only - use Riverpod providers for new code)
+  locator.registerLazySingleton<MyTingsStore>(() => MyTingsStore());
+  locator.registerLazySingleton<UserProfileStore>(() => UserProfileStore());
+  locator.registerLazySingleton<ScanHistoryStore>(() => ScanHistoryStore());
+  locator.registerLazySingleton<ProductPagesStore>(() => ProductPagesStore());
+  locator.registerLazySingleton<ProductTagsStore>(() => ProductTagsStore());
 
   // Services
   locator.registerLazySingleton<ShareService>(() => ShareService());

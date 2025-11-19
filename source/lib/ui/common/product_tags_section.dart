@@ -25,7 +25,7 @@ class ProductTagsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagsState = ref.watch(tagsProvider);
+    final tagsState = ref.watch(tagsNotifierProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +35,9 @@ class ProductTagsSection extends ConsumerWidget {
           const SizedBox(height: 13),
         ],
         tagsState.when(
-          data: (tags) => tags.isEmpty
+          initial: () => const SizedBox.shrink(),
+          loading: () => const CircularProgressIndicator(),
+          loaded: (tags) => tags.isEmpty
               ? ContentBig(tr('tags.no_tags'))
               : Wrap(
                   spacing: 8,
@@ -45,8 +47,7 @@ class ProductTagsSection extends ConsumerWidget {
                     return _buildTag(context, ref, tag, myTing.instanceId ?? myTing.id);
                   }).toList(),
                 ),
-          loading: () => const CircularProgressIndicator(),
-          error: (_, __) => ContentBig(tr('tags.error_loading')),
+          error: (message) => ContentBig(tr('tags.error_loading')),
         ),
         const SizedBox(height: 16),
         const TingDivider(height: 1, color: TingsColors.grayMedium),

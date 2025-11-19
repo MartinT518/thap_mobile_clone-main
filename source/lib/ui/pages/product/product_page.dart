@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:logger/logger.dart';
 import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/models/cdn_image.dart';

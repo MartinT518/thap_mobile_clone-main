@@ -1,11 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thap/models/product_item.dart';
-import 'package:thap/services/service_locator.dart';
-import 'package:thap/stores/my_tings_store.dart';
-import 'package:thap/stores/product_tags_store.dart';
-import 'package:thap/stores/scan_history_store.dart';
+import 'package:thap/features/my_tings/presentation/providers/my_tings_provider.dart';
+import 'package:thap/features/scan_history/presentation/providers/scan_history_state_provider.dart';
+import 'package:thap/features/tags/presentation/providers/tags_provider.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/deletable.dart';
 import 'package:thap/ui/common/product_page_opener.dart';
@@ -15,50 +14,48 @@ import 'package:thap/ui/pages/my_tings/product_grid_item.dart';
 import 'package:thap/ui/pages/my_tings/product_list_item.dart';
 import 'package:thap/ui/pages/my_tings/product_list_item_skeleton.dart';
 
-class MyTingsListSection extends StatelessWidget {
-  MyTingsListSection({super.key});
-
-  final _myTingsStore = locator<MyTingsStore>();
-  final _scanHistoryStore = locator<ScanHistoryStore>();
+class MyTingsListSection extends ConsumerWidget {
+  const MyTingsListSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Observer(
-      builder: (_) {
-        final List<ProductItem?> tings = List.from(
-          _myTingsStore.myTingsFiltered,
-        );
-        // final int totalTings = tings.length;
-        // int minimumOnScreen = _scanHistoryStore.hasAny ? 4 : 6;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myTingsState = ref.watch(myTingsProvider);
+    final scanHistoryState = ref.watch(scanHistoryStoreProvider);
 
-        // Fill up my tings list with skeletons if needed
-        // if (totalTings < minimumOnScreen) {
-        //   int numberOfSkeletonItemsToAdd = minimumOnScreen - totalTings;
-        //   for (var i = 1; i <= numberOfSkeletonItemsToAdd; i++) {
-        //     tings.add(null);
-        //   }
-        // }
+    final List<ProductItem?> tings = List.from(
+      myTingsState.myTingsFiltered,
+    );
+    // final int totalTings = tings.length;
+    // int minimumOnScreen = scanHistoryState.hasAny ? 4 : 6;
 
-        if (_myTingsStore.displayGrid) {
-          return GridView.builder(
-            physics: const BouncingScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisExtent: 225,
-              crossAxisSpacing: 7,
-              mainAxisSpacing: 8,
-              crossAxisCount: 2,
-            ),
-            shrinkWrap: true,
-            itemCount: _myTingsStore.myTingsFiltered.length,
-            itemBuilder: (_, int index) {
-              final product = _myTingsStore.myTingsFiltered[index];
+    // Fill up my tings list with skeletons if needed
+    // if (totalTings < minimumOnScreen) {
+    //   int numberOfSkeletonItemsToAdd = minimumOnScreen - totalTings;
+    //   for (var i = 1; i <= numberOfSkeletonItemsToAdd; i++) {
+    //     tings.add(null);
+    //   }
+    // }
 
-              return Deletable(
-                itemId: product.id,
-                confirmDeletion: true,
-                onDeleted: () async {
-                  await _myTingsStore.remove(product);
-                },
+    if (myTingsState.displayGrid) {
+      return GridView.builder(
+        physics: const BouncingScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisExtent: 225,
+          crossAxisSpacing: 7,
+          mainAxisSpacing: 8,
+          crossAxisCount: 2,
+        ),
+        shrinkWrap: true,
+        itemCount: myTingsState.myTingsFiltered.length,
+        itemBuilder: (_, int index) {
+          final product = myTingsState.myTingsFiltered[index];
+
+          return Deletable(
+            itemId: product.id,
+            confirmDeletion: true,
+            onDeleted: () async {
+              await ref.read(myTingsProvider.notifier).remove(product);
+            },
                 child: ProductPageOpener(
                   product: product,
                   child: Hero(
@@ -66,12 +63,12 @@ class MyTingsListSection extends StatelessWidget {
                     child: ProductGridItem(product: product),
                   ),
                 ),
-              );
-            },
           );
-        }
+        },
+      );
+    }
 
-        return Container(
+    return Container(
           decoration: const BoxDecoration(
             border: Border.symmetric(
               horizontal: BorderSide(color: TingsColors.grayMedium, width: 2),
@@ -85,14 +82,14 @@ class MyTingsListSection extends StatelessWidget {
             itemCount: tings.length,
             itemBuilder: (_, int index) {
               final myTing = tings[index];
-              return myTing == null
-                  ? const ProductListItemSkeleton()
-                  : Deletable(
-                    itemId: myTing.id,
-                    confirmDeletion: true,
-                    onDeleted: () async {
-                      await _myTingsStore.remove(myTing);
-                    },
+          return myTing == null
+              ? const ProductListItemSkeleton()
+              : Deletable(
+                itemId: myTing.id,
+                confirmDeletion: true,
+                onDeleted: () async {
+                  await ref.read(myTingsProvider.notifier).remove(myTing);
+                },
                     child: ProductPageOpener(
                       product: myTing,
                       child: Hero(
@@ -104,25 +101,20 @@ class MyTingsListSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                  );
-            },
-          ),
-        );
-      },
+              );
+        },
+      ),
     );
   }
 }
 
-class SharedTingsListSection extends StatelessWidget {
-  SharedTingsListSection({super.key});
-
-  final _myTingsStore = locator<MyTingsStore>();
-  final _tagsStore = locator<ProductTagsStore>();
+class SharedTingsListSection extends ConsumerWidget {
+  const SharedTingsListSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Observer(
-      builder: (_) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myTingsState = ref.watch(myTingsProvider);
+    final tagsState = ref.watch(tagsNotifierProvider);
         if (!_tagsStore.hasAny) return Container();
 
         final lastTagId = _tagsStore.tags.last.id;

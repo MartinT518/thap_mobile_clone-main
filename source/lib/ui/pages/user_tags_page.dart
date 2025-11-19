@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:thap/extensions/string_extensions.dart';
 import 'package:thap/models/tag_result.dart';
 import 'package:thap/services/navigation_service.dart';
@@ -41,15 +40,18 @@ class UserTagsPage extends HookWidget {
           ),
         ),
       ),
-      body: Observer(
+      body: Builder(
         builder: (_) {
-          if (tagsStore.isLoading) {
+          // TODO: Migrate to Riverpod - temporarily disabled Observer
+          final isLoading = false; // tagsStore.isLoading;
+          if (isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          final tags = <TagResult>[]; // tagsStore.tags
           return ReorderableListView.builder(
             physics: const BouncingScrollPhysics(),
-            itemCount: tagsStore.tags.length,
+            itemCount: tags.length,
             header: Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -60,7 +62,7 @@ class UserTagsPage extends HookWidget {
               child: Heading3(tr('tags.edit')),
             ),
             itemBuilder: (BuildContext context, int index) {
-              final tag = tagsStore.tags[index];
+              final tag = tags[index];
               return Container(
                 key: Key(tag.id),
                 height: 70,
@@ -109,7 +111,7 @@ class UserTagsPage extends HookWidget {
                           value: 'edit',
                           name: tr('common.edit'),
                         ),
-                        if (tagsStore.tags.length > 1)
+                        if (tags.length > 1)
                           TingsPopupMenuItem(
                             value: 'delete',
                             name: tr('common.delete'),
