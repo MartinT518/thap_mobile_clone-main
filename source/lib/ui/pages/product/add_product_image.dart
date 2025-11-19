@@ -8,7 +8,7 @@ import 'package:thap/models/product_item.dart';
 import 'package:thap/services/permissions_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
-import 'package:thap/ui/common/button.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/not_mytings_interaction_bottom_sheet.dart';
 import 'package:thap/ui/common/ting_icon.dart';
@@ -93,8 +93,8 @@ class AddProductImage extends HookWidget {
           : Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              MainButton(
-                onTap: () async {
+              ElevatedButton.icon(
+                onPressed: () async {
                   final hasPermission =
                       await _permissionsService.requestCamera();
 
@@ -106,12 +106,13 @@ class AddProductImage extends HookWidget {
 
                   await saveImage(imageFile);
                 },
-                iconName: 'camera_camera',
-                text: tr('product.image.camera'),
+                icon: const TingIcon('camera_camera', height: 20),
+                label: Text(tr('product.image.camera')),
+                style: DesignSystemComponents.primaryButton(),
               ),
               const SizedBox(height: 8),
-              MainButton(
-                onTap: () async {
+              ElevatedButton.icon(
+                onPressed: () async {
                   final hasPermission =
                       await _permissionsService.requestPhotos();
 
@@ -123,8 +124,9 @@ class AddProductImage extends HookWidget {
 
                   await saveImage(imageFile);
                 },
-                iconName: 'arrow_upload',
-                text: tr('product.image.upload'),
+                icon: const TingIcon('arrow_upload', height: 20),
+                label: Text(tr('product.image.upload')),
+                style: DesignSystemComponents.primaryButton(),
               ),
             ],
           );

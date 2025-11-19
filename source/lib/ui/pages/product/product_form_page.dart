@@ -11,9 +11,9 @@ import 'package:thap/models/product_form.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -165,8 +165,8 @@ class ProductFormPage extends HookWidget {
                   ),
                 ),
                 const SizedBox(height: 28),
-                MainButton(
-                  onTap: () async {
+                ElevatedButton(
+                  onPressed: () async {
                     if (_formKey.currentState!.saveAndValidate()) {
                       List<KeyValueData> registrationData = [];
 
@@ -192,14 +192,16 @@ class ProductFormPage extends HookWidget {
                       navigationService.pop();
                     }
                   },
-                  text: tr('common.save'),
+                  style: DesignSystemComponents.primaryButton(),
+                  child: Text(tr('common.save')),
                 ),
                 const SizedBox(height: 8),
-                LightButton(
-                  onTap: () {
+                OutlinedButton(
+                  onPressed: () {
                     navigationService.pop();
                   },
-                  text: tr('common.cancel'),
+                  style: DesignSystemComponents.secondaryButton(),
+                  child: Text(tr('common.cancel')),
                 ),
               ],
             ),
