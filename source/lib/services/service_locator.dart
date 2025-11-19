@@ -31,6 +31,19 @@ import 'package:thap/stores/product_tags_store.dart';
 import 'package:thap/stores/scan_history_store.dart';
 import 'package:thap/stores/user_profile_store.dart';
 
+/// ⚠️ DEPRECATED: GetIt/Service Locator pattern is deprecated and will be removed in v3.0
+/// 
+/// Please migrate to Riverpod providers for new code:
+/// ```dart
+/// // Old way (deprecated):
+/// final myService = locator<MyService>();
+/// 
+/// // New way (recommended):
+/// final myService = ref.watch(myServiceProvider);
+/// ```
+/// 
+/// See MIGRATION_GUIDE.md for detailed migration instructions.
+@Deprecated('Use Riverpod providers instead. See MIGRATION_GUIDE.md for details.')
 final locator = GetIt.instance;
 
 void setupServiceLocator() {

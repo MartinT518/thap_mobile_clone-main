@@ -4,10 +4,23 @@ import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/ting_icon.dart';
 import 'package:thap/ui/common/typography.dart';
 
-/// @deprecated Use DesignSystemComponents.primaryButton() instead
-/// This legacy button will be removed in a future version.
-/// Migration: Replace MainButton with ElevatedButton using DesignSystemComponents.primaryButton()
-@Deprecated('Use DesignSystemComponents.primaryButton() instead')
+/// ⚠️ DEPRECATED: MainButton is deprecated and will be removed in v3.0
+/// 
+/// Please migrate to Design System components:
+/// ```dart
+/// // Old way (deprecated):
+/// MainButton(onTap: () {}, text: 'Click Me')
+/// 
+/// // New way (recommended):
+/// ElevatedButton(
+///   onPressed: () {},
+///   style: DesignSystemComponents.primaryButton(),
+///   child: Text('Click Me'),
+/// )
+/// ```
+/// 
+/// See MIGRATION_GUIDE.md for detailed migration instructions.
+@Deprecated('Use ElevatedButton with DesignSystemComponents.primaryButton() instead')
 class MainButton extends StatelessWidget {
   const MainButton({
     super.key,
@@ -33,10 +46,23 @@ class MainButton extends StatelessWidget {
   );
 }
 
-/// @deprecated Use DesignSystemComponents.secondaryButton() instead
-/// This legacy button will be removed in a future version.
-/// Migration: Replace LightButton with OutlinedButton using DesignSystemComponents.secondaryButton()
-@Deprecated('Use DesignSystemComponents.secondaryButton() instead')
+/// ⚠️ DEPRECATED: LightButton is deprecated and will be removed in v3.0
+/// 
+/// Please migrate to Design System components:
+/// ```dart
+/// // Old way (deprecated):
+/// LightButton(onTap: () {}, text: 'Cancel')
+/// 
+/// // New way (recommended):
+/// OutlinedButton(
+///   onPressed: () {},
+///   style: DesignSystemComponents.secondaryButton(),
+///   child: Text('Cancel'),
+/// )
+/// ```
+/// 
+/// See MIGRATION_GUIDE.md for detailed migration instructions.
+@Deprecated('Use OutlinedButton with DesignSystemComponents.secondaryButton() instead')
 class LightButton extends StatelessWidget {
   const LightButton({
     super.key,
