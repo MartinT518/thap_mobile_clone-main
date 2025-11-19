@@ -8,9 +8,9 @@ import 'package:thap/models/app_data.dart';
 import 'package:thap/models/user_data_result.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/ting_checkbox.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -121,9 +121,10 @@ class SettingsPage extends HookWidget {
                         ),
                         const SizedBox(height: 34),
                         const Spacer(),
-                        MainButton(
-                          onTap: () => navigationService.pop(),
-                          text: tr('common.done'),
+                        ElevatedButton(
+                          onPressed: () => navigationService.pop(),
+                          style: DesignSystemComponents.primaryButton(),
+                          child: Text(tr('common.done')),
                         ),
                       ],
                     ),

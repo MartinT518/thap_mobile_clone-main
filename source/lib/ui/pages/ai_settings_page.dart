@@ -7,8 +7,8 @@ import 'package:thap/services/ai_settings_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/product_menu_item.dart';
 import 'package:thap/ui/common/tings_form.dart';
@@ -233,9 +233,10 @@ class _AIProviderSetup extends HookWidget {
                   ),
                 ),
               const Spacer(),
-              MainButton(
-                onTap: isValidating.value ? () {} : validateAndSave,
-                text: isValidating.value ? 'Validating...' : 'Confirm',
+              ElevatedButton(
+                onPressed: isValidating.value ? null : validateAndSave,
+                style: DesignSystemComponents.primaryButton(),
+                child: Text(isValidating.value ? 'Validating...' : 'Confirm'),
               ),
             ],
           ),

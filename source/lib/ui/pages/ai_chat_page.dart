@@ -4,8 +4,8 @@ import 'package:thap/models/product_item.dart';
 import 'package:thap/services/ai_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -195,9 +195,10 @@ class AIChatPage extends HookWidget {
                     maxLines: 3,
                   ),
                   const SizedBox(height: 12),
-                  MainButton(
-                    onTap: isLoading.value ? () {} : askQuestion,
-                    text: isLoading.value ? 'Processing...' : 'Ask',
+                  ElevatedButton(
+                    onPressed: isLoading.value ? null : askQuestion,
+                    style: DesignSystemComponents.primaryButton(),
+                    child: Text(isLoading.value ? 'Processing...' : 'Ask'),
                   ),
                 ],
               ),
