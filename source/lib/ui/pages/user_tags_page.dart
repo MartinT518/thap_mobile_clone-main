@@ -7,9 +7,9 @@ import 'package:thap/models/tag_result.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/product_tags_store.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/ting_icon.dart';
 import 'package:thap/ui/common/tings_bottom_sheet.dart';
@@ -32,11 +32,12 @@ class UserTagsPage extends HookWidget {
         bottom: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: MainButton(
-            onTap: () {
+          child: ElevatedButton(
+            onPressed: () {
               showTagEditor(context: context);
             },
-            text: tr('tags.add_title'),
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(tr('tags.add_title')),
           ),
         ),
       ),
@@ -186,8 +187,8 @@ void showTagEditor({
             hint: tr('tags.add_hint'),
           ),
           const SizedBox(height: 38),
-          MainButton(
-            onTap: () async {
+          ElevatedButton(
+            onPressed: () async {
               final tagName = tagNameController.text;
               if (tagName.isBlank) {
                 toastService.error(tr('tags.no_name_message'));
@@ -207,7 +208,8 @@ void showTagEditor({
                 toastService.success(tr('tags.added_message'));
               }
             },
-            text: tr('common.done'),
+            style: DesignSystemComponents.primaryButton(),
+            child: Text(tr('common.done')),
           ),
         ],
       ),

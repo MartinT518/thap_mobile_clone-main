@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/typography.dart';
 import 'package:thap/ui/pages/scan/scan_page.dart';
 
@@ -46,11 +46,12 @@ class MyTingsEmptySection extends StatelessWidget {
           ),
           Container(
             alignment: Alignment.bottomCenter,
-            child: MainButton(
-              onTap: () {
+            child: ElevatedButton(
+              onPressed: () {
                 navigationService.push(const ScanPage());
               },
-              text: tr('my_tings.scan_button'),
+              style: DesignSystemComponents.primaryButton(),
+              child: Text(tr('my_tings.scan_button')),
             ),
           ),
         ],

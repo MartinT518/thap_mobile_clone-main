@@ -9,9 +9,9 @@ import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/tings_popup_menu.dart';
@@ -145,9 +145,10 @@ class UserProfilePage extends HookWidget {
                         ),
                         const SizedBox(height: 34),
                         const Spacer(),
-                        MainButton(
-                          onTap: () => navigationService.pop(),
-                          text: tr('common.done'),
+                        ElevatedButton(
+                          onPressed: () => navigationService.pop(),
+                          style: DesignSystemComponents.primaryButton(),
+                          child: Text(tr('common.done')),
                         ),
                       ],
                     ),
