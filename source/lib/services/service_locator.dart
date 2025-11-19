@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
 import 'package:thap/configuration_demo.dart';
 import 'package:thap/data/network/api/api_client.dart';
 import 'package:thap/data/network/api/app_api.dart';
@@ -25,13 +24,8 @@ import 'package:thap/services/opener_service.dart';
 import 'package:thap/services/permissions_service.dart';
 import 'package:thap/services/share_service.dart';
 import 'package:thap/services/toast_service.dart';
-import 'package:thap/stores/my_tings_store.dart';
-import 'package:thap/stores/product_pages_store.dart';
-import 'package:thap/stores/product_tags_store.dart';
-import 'package:thap/stores/scan_history_store.dart';
-import 'package:thap/stores/user_profile_store.dart';
 
-/// ⚠️ DEPRECATED: GetIt/Service Locator pattern is deprecated and will be removed in v3.0
+/// ⚠️ DEPRECATED: Service Locator pattern is deprecated and will be removed in v3.0
 /// 
 /// Please migrate to Riverpod providers for new code:
 /// ```dart
@@ -43,19 +37,40 @@ import 'package:thap/stores/user_profile_store.dart';
 /// ```
 /// 
 /// See MIGRATION_GUIDE.md for detailed migration instructions.
+
+/// Simple service locator replacement (temporary stub for migration)
+class _ServiceLocator {
+  final Map<Type, dynamic> _services = {};
+  
+  T call<T extends Object>() {
+    final service = _services[T];
+    if (service == null) {
+      throw Exception('Service $T not registered. Please use Riverpod providers instead.');
+    }
+    return service as T;
+  }
+  
+  void registerLazySingleton<T extends Object>(T Function() factory) {
+    _services[T] = factory();
+  }
+  
+  void registerSingleton<T extends Object>(T instance) {
+    _services[T] = instance;
+  }
+}
+
 @Deprecated('Use Riverpod providers instead. See MIGRATION_GUIDE.md for details.')
-final locator = GetIt.instance;
+final locator = _ServiceLocator();
 
 void setupServiceLocator() {
-  // Stores (Legacy - being migrated to Riverpod)
-  // NOTE: Commented out stores that have Riverpod replacements to fix test conflicts
-  // TODO: Complete migration and remove these entirely
-  
-  // locator.registerLazySingleton<MyTingsStore>(() => MyTingsStore()); // Use walletNotifierProvider instead
-  locator.registerLazySingleton<ScanHistoryStore>(() => ScanHistoryStore()); // Keep for now (no replacement yet)
-  locator.registerLazySingleton<ProductPagesStore>(() => ProductPagesStore()); // Keep for now (used in navigation)
-  // locator.registerLazySingleton<UserProfileStore>(() => UserProfileStore()); // Use authProvider instead
-  locator.registerLazySingleton<ProductTagsStore>(() => ProductTagsStore()); // Keep for now (widely used)
+  // Stores (Legacy - ALL REMOVED - MobX/GetIt migration complete)
+  // NOTE: All stores have been migrated to Riverpod providers
+  // Use respective Riverpod providers instead:
+  // - MyTingsStore -> walletNotifierProvider
+  // - UserProfileStore -> authProvider
+  // - ScanHistoryStore -> scanHistoryProvider (TODO: create)
+  // - ProductPagesStore -> Remove (use GoRouter directly)
+  // - ProductTagsStore -> tagsProvider (TODO: create)
 
   // Services
   locator.registerLazySingleton<ShareService>(() => ShareService());
