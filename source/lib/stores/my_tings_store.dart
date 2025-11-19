@@ -18,4 +18,5 @@ class MyTingsStore {
   void toggleDisplayGrid() {}
   void setDisplayMode(String mode) {}
   Future<void> update(dynamic ting) async {}
+  Future<dynamic> add(dynamic ting) async => ting;
 }

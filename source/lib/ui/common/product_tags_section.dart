@@ -100,7 +100,7 @@ class ProductTagsSection extends ConsumerWidget {
     );
   }
 
-  Widget _buildTag(BuildContext context, WidgetRef ref, TagResult tag, String tingId) {
+  Widget _buildTag(BuildContext context, WidgetRef ref, dynamic tag, String tingId) {
     // TODO: Implement tag activation logic with Riverpod
     // For now, show inactive tags (can be enhanced later)
     final isActive = myTing.tags.contains(tag.id);

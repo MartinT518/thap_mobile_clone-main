@@ -268,7 +268,7 @@ class _ExtractProductInfoBottomBar extends HookWidget {
                   showTingsAddedInteraction(context, ting);
                 }
               },
-              text: tr('common.save'),
+              child: Text(tr('common.save')),
             ),
           ],
         ),

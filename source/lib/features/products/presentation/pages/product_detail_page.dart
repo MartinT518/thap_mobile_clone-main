@@ -242,12 +242,14 @@ class ProductDetailPage extends ConsumerWidget {
 
     // Load wallet on first build
     ref.listen(walletNotifierProvider, (previous, next) {
-      if (previous is _Initial && next is! _Loading && next is! _Loaded) {
+      // TODO: implement after code generation
+      if (false) { // if (previous is _Initial && next is! _Loading && next is! _Loaded) {
         walletNotifier.loadWalletProducts();
       }
     });
 
-    if (walletState is _Initial) {
+    // TODO: implement after code generation
+    if (false) { // if (walletState is _Initial) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         walletNotifier.loadWalletProducts();
       });

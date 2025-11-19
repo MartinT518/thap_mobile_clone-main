@@ -182,13 +182,13 @@ class _ScanPageState extends ConsumerState<ScanPage> {
               ),
             ),
           ),
-          // Loading indicator
-          if (scanState is _Processing || scanState is _Scanning)
-            const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
+          // Loading indicator - TODO: implement after code generation
+          // if (scanState is _Processing || scanState is _Scanning)
+          //   const Center(
+          //     child: CircularProgressIndicator(
+          //       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          //     ),
+          //   ),
         ],
       ),
     );
