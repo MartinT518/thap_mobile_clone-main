@@ -8,12 +8,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:thap/app.dart';
 import 'package:thap/core/config/constants.dart';
+import 'package:thap/services/service_locator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Set app orientation to portrait
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  
+  // Initialize service locator (legacy - being migrated to Riverpod)
+  setupServiceLocator();
   
   // Initialize localization
   await EasyLocalization.ensureInitialized();

@@ -6,7 +6,7 @@ class Env {
   /// Demo mode flag - set at compile time
   static const bool isDemoMode = bool.fromEnvironment(
     'DEMO_MODE',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   /// API base URL
