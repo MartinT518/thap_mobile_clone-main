@@ -40,8 +40,8 @@ class AuthRepositoryDemo implements AuthRepository {
   @override
   Future<bool> tryRestoreSession() async {
     await Future.delayed(const Duration(milliseconds: 500));
-    // In demo mode, always succeed
-    return true;
+    // In demo mode, require manual button click (don't auto-restore)
+    return false;
   }
 
   @override
