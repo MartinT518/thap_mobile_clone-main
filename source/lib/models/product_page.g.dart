@@ -8,29 +8,25 @@ part of 'product_page.dart';
 
 ProductPagesModel _$ProductPagesModelFromJson(Map<String, dynamic> json) =>
     ProductPagesModel(
-      userImages:
-          (json['userImages'] as List<dynamic>)
-              .map((e) => CdnImage.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      userImages: (json['userImages'] as List<dynamic>)
+          .map((e) => CdnImage.fromJson(e as Map<String, dynamic>))
+          .toList(),
       productId: json['productId'] as String,
-      pages:
-          (json['pages'] as List<dynamic>)
-              .map((e) => ProductPageModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      pages: (json['pages'] as List<dynamic>)
+          .map((e) => ProductPageModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 ProductPageModel _$ProductPageModelFromJson(Map<String, dynamic> json) =>
     ProductPageModel(
       pageId: json['id'] as String,
       title: json['title'] as String,
-      components:
-          (json['contents'] as List<dynamic>)
-              .map(
-                (e) => ProductPageComponentModel.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
-              .toList(),
+      components: (json['contents'] as List<dynamic>)
+          .map(
+            (e) =>
+                ProductPageComponentModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
     );
 
 ProductPageComponentModel _$ProductPageComponentModelFromJson(
@@ -43,56 +39,44 @@ ProductPageComponentModel _$ProductPageComponentModelFromJson(
   ),
   title: json['title'] as String?,
   subTitle: json['subTitle'] as String?,
-  link:
-      json['link'] == null
-          ? null
-          : ProductPageComponentLinkModel.fromJson(
-            json['link'] as Map<String, dynamic>,
-          ),
-  links:
-      (json['links'] as List<dynamic>?)
-          ?.map(
-            (e) => ProductPageComponentLinkModel.fromJson(
-              e as Map<String, dynamic>,
-            ),
-          )
-          .toList(),
-  rating:
-      json['rating'] == null
-          ? null
-          : ProductPageComponentRatingModel.fromJson(
-            json['rating'] as Map<String, dynamic>,
-          ),
-  cdnImages:
-      (json['cdnImages'] as List<dynamic>?)
-          ?.map((e) => CdnImage.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  link: json['link'] == null
+      ? null
+      : ProductPageComponentLinkModel.fromJson(
+          json['link'] as Map<String, dynamic>,
+        ),
+  links: (json['links'] as List<dynamic>?)
+      ?.map(
+        (e) =>
+            ProductPageComponentLinkModel.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
+  rating: json['rating'] == null
+      ? null
+      : ProductPageComponentRatingModel.fromJson(
+          json['rating'] as Map<String, dynamic>,
+        ),
+  cdnImages: (json['cdnImages'] as List<dynamic>?)
+      ?.map((e) => CdnImage.fromJson(e as Map<String, dynamic>))
+      .toList(),
   content: json['content'] as String?,
   contentUrl: json['contentUrl'] as String?,
-  contact:
-      json['contact'] == null
-          ? null
-          : ProductPageComponentContactModel.fromJson(
-            json['contact'] as Map<String, dynamic>,
-          ),
-  tableContents:
-      (json['tableContents'] as List<dynamic>?)
-          ?.map((e) => Map<String, String>.from(e as Map))
-          .toList(),
-  searchLinksContent:
-      (json['searchLinksContent'] as List<dynamic>?)
-          ?.map(
-            (e) => SearchLinkContentModel.fromJson(e as Map<String, dynamic>),
-          )
-          .toList(),
-  divider:
-      json['divider'] == null
-          ? null
-          : DividerModel.fromJson(json['divider'] as Map<String, dynamic>),
-  video:
-      json['video'] == null
-          ? null
-          : VideoModel.fromJson(json['video'] as Map<String, dynamic>),
+  contact: json['contact'] == null
+      ? null
+      : ProductPageComponentContactModel.fromJson(
+          json['contact'] as Map<String, dynamic>,
+        ),
+  tableContents: (json['tableContents'] as List<dynamic>?)
+      ?.map((e) => Map<String, String>.from(e as Map))
+      .toList(),
+  searchLinksContent: (json['searchLinksContent'] as List<dynamic>?)
+      ?.map((e) => SearchLinkContentModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  divider: json['divider'] == null
+      ? null
+      : DividerModel.fromJson(json['divider'] as Map<String, dynamic>),
+  video: json['video'] == null
+      ? null
+      : VideoModel.fromJson(json['video'] as Map<String, dynamic>),
   userCanEdit: json['userCanEdit'] as bool?,
   allowCopy: json['allowCopy'] as bool?,
   canUpload: json['canUpload'] as bool?,

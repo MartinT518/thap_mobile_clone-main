@@ -6,16 +6,14 @@ part of 'product_form.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ProductFormModel _$ProductFormModelFromJson(
-  Map<String, dynamic> json,
-) => ProductFormModel(
-  title: json['title'] as String,
-  description: json['description'] as String?,
-  fields:
-      (json['formFields'] as List<dynamic>)
+ProductFormModel _$ProductFormModelFromJson(Map<String, dynamic> json) =>
+    ProductFormModel(
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      fields: (json['formFields'] as List<dynamic>)
           .map((e) => ProductFormFieldModel.fromJson(e as Map<String, dynamic>))
           .toList(),
-);
+    );
 
 Map<String, dynamic> _$ProductFormModelToJson(ProductFormModel instance) =>
     <String, dynamic>{
@@ -54,10 +52,9 @@ const _$ProductFormFieldTypeEnumMap = {
 ProductRegistrationData _$ProductRegistrationDataFromJson(
   Map<String, dynamic> json,
 ) => ProductRegistrationData(
-  registrationData:
-      (json['registrationData'] as List<dynamic>)
-          .map((e) => KeyValueData.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  registrationData: (json['registrationData'] as List<dynamic>)
+      .map((e) => KeyValueData.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$ProductRegistrationDataToJson(

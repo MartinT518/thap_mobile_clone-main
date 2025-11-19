@@ -7,14 +7,12 @@ part of 'app_data.dart';
 // **************************************************************************
 
 AppDataModel _$AppDataModelFromJson(Map<String, dynamic> json) => AppDataModel(
-  countries:
-      (json['countries'] as List<dynamic>)
-          .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  languages:
-      (json['languages'] as List<dynamic>)
-          .map((e) => LanguageModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  countries: (json['countries'] as List<dynamic>)
+      .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  languages: (json['languages'] as List<dynamic>)
+      .map((e) => LanguageModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$AppDataModelToJson(AppDataModel instance) =>
