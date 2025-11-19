@@ -57,6 +57,7 @@ class AIQuestionSelectionPage extends StatelessWidget {
               Expanded(
                 child: ListView(
                   physics: const BouncingScrollPhysics(),
+                  cacheExtent: 500, // Performance: Pre-render items off-screen
                   children: [
                     ..._questions.map(
                       (question) => ProductMenuItem(

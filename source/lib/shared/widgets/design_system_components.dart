@@ -176,6 +176,8 @@ class DesignSystemComponents {
                           ? Image.network(
                               imageUrl,
                               fit: BoxFit.cover,
+                              // Performance optimization: Limit memory cache
+                              cacheWidth: 600, // Grid items don't need full resolution
                               errorBuilder: (context, error, stackTrace) {
                                 return const Icon(
                                   Icons.image_not_supported,
@@ -270,6 +272,9 @@ class DesignSystemComponents {
                         ? Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
+                            // Performance optimization: 64x64px list items
+                            cacheWidth: 128, // 64px * 2 for high-DPI
+                            cacheHeight: 128,
                             errorBuilder: (context, error, stackTrace) {
                               return const Icon(
                                 Icons.image_not_supported,

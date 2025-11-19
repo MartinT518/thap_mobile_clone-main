@@ -72,6 +72,9 @@ class ProductDetailPage extends ConsumerWidget {
                       child: Image.network(
                         product.imageUrl!,
                         fit: BoxFit.cover,
+                        // Performance optimization: Limit memory cache size
+                        // 300px height * device pixel ratio = ~900px for high-DPI screens
+                        cacheWidth: 600, // Limit to 600px width for memory efficiency
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
                             Icons.image_not_supported,
@@ -253,22 +256,20 @@ class ProductDetailPage extends ConsumerWidget {
     if (isInWallet) {
       return ElevatedButton.icon(
         onPressed: () async {
-          final confirmed = await showDialog<bool>(
+          final confirmed = await DesignSystemComponents.showDesignSystemDialog<bool>(
             context: context,
-            builder: (context) => AlertDialog(
-              title: Text(tr('my_tings.remove_confirm_title')),
-              content: Text(tr('my_tings.remove_confirm_message')),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: Text(tr('common.cancel')),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: Text(tr('common.remove')),
-                ),
-              ],
-            ),
+            title: tr('my_tings.remove_confirm_title'),
+            content: Text(tr('my_tings.remove_confirm_message')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(tr('common.cancel')),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(tr('common.remove')),
+              ),
+            ],
           );
 
           if (confirmed == true) {

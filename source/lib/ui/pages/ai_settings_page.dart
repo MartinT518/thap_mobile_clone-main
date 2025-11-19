@@ -72,6 +72,7 @@ class AISettingsPage extends HookWidget {
                     
                     return ListView(
                       physics: const BouncingScrollPhysics(),
+                      cacheExtent: 500, // Performance: Pre-render items off-screen
                       children: AIProvider.values.map((providerOption) {
                         final isInstalled = providerStatus[providerOption] ?? false;
                         

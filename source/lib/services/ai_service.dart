@@ -71,8 +71,9 @@ class AIService {
 
   Future<Stream<String>> askQuestion(
     String question,
-    String productInfo,
-  ) async {
+    String productInfo, {
+    String? userCountry,
+  }) async {
     final provider = await _settingsService.getSelectedProvider();
     final apiKey = provider != null
         ? await _settingsService.getApiKey(provider)
@@ -82,7 +83,16 @@ class AIService {
       throw Exception('AI provider not configured');
     }
 
-    final fullPrompt = '$question\n\nProduct: $productInfo';
+    // Enhanced context: Add current date and user location for better AI responses
+    final currentDate = DateTime.now().toIso8601String().split('T')[0];
+    final contextInfo = StringBuffer();
+    contextInfo.writeln('Product: $productInfo');
+    contextInfo.writeln('Current Date: $currentDate');
+    if (userCountry != null && userCountry.isNotEmpty) {
+      contextInfo.writeln('User Location: $userCountry');
+    }
+
+    final fullPrompt = '$question\n\n$contextInfo';
 
     switch (provider) {
       case AIProvider.openai:

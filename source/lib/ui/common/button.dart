@@ -4,6 +4,10 @@ import 'package:thap/ui/common/colors.dart';
 import 'package:thap/ui/common/ting_icon.dart';
 import 'package:thap/ui/common/typography.dart';
 
+/// @deprecated Use DesignSystemComponents.primaryButton() instead
+/// This legacy button will be removed in a future version.
+/// Migration: Replace MainButton with ElevatedButton using DesignSystemComponents.primaryButton()
+@Deprecated('Use DesignSystemComponents.primaryButton() instead')
 class MainButton extends StatelessWidget {
   const MainButton({
     super.key,
@@ -29,6 +33,10 @@ class MainButton extends StatelessWidget {
   );
 }
 
+/// @deprecated Use DesignSystemComponents.secondaryButton() instead
+/// This legacy button will be removed in a future version.
+/// Migration: Replace LightButton with OutlinedButton using DesignSystemComponents.secondaryButton()
+@Deprecated('Use DesignSystemComponents.secondaryButton() instead')
 class LightButton extends StatelessWidget {
   const LightButton({
     super.key,

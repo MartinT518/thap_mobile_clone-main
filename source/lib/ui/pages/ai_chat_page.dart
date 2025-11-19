@@ -45,14 +45,34 @@ class AIChatPage extends HookWidget {
             ? '${product.name}, EAN: ${product.barcode}'
             : product.name;
 
+        // Get user country from settings (if available) for context-aware AI responses
+        // TODO: Get from user settings when available
+        final userCountry = null; // Will be populated from user settings
+
         final stream = await aiService.askQuestion(
           questionController.text,
           productInfo,
+          userCountry: userCountry,
         );
 
+        // Use StringBuffer to accumulate chunks and update state periodically
+        // This prevents excessive UI rebuilds from tiny chunks
+        final buffer = StringBuffer();
+        int chunkCount = 0;
+        const updateThreshold = 5; // Update UI every 5 chunks
+
         await for (final chunk in stream) {
-          responseText.value += chunk;
+          buffer.write(chunk);
+          chunkCount++;
+
+          // Update state periodically to prevent UI jitter
+          if (chunkCount % updateThreshold == 0 || chunk.length > 20) {
+            responseText.value = buffer.toString();
+          }
         }
+
+        // Final update to ensure all content is displayed
+        responseText.value = buffer.toString();
       } catch (e) {
         toastService.error('Failed to get AI response. Please try again.');
       } finally {
@@ -112,6 +132,7 @@ class AIChatPage extends HookWidget {
                 color: TingsColors.white,
                 child: ListView(
                   padding: const EdgeInsets.all(16),
+                  cacheExtent: 500, // Performance: Pre-render items off-screen for smoother scrolling
                   children: [
                     if (initialQuestion != null)
                       Container(
