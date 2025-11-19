@@ -172,6 +172,9 @@ class _$TagModelImpl implements _TagModel {
   @override
   int get hashCode => Object.hash(runtimeType, id, title, itemCount);
 
+  @override
+  Tag toEntity() => Tag(id: id, title: title, itemCount: itemCount);
+
   /// Create a copy of TagModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)

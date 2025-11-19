@@ -295,8 +295,8 @@ class ProductDetailPage extends ConsumerWidget {
         },
         icon: const Icon(Icons.remove_circle_outline),
         label: Text(tr('my_tings.remove')),
-        style: DesignSystemComponents.primaryButton.copyWith(
-          backgroundColor: WidgetStateProperty.all(AppTheme.errorColor),
+        style: DesignSystemComponents.primaryButton(
+          backgroundColor: AppTheme.errorColor,
         ),
       );
     }
@@ -312,7 +312,7 @@ class ProductDetailPage extends ConsumerWidget {
       },
       icon: const Icon(Icons.add_circle_outline),
       label: Text(tr('my_tings.add')),
-      style: DesignSystemComponents.primaryButton,
+      style: DesignSystemComponents.primaryButton(),
     );
   }
 }

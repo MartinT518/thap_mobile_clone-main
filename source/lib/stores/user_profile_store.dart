@@ -4,6 +4,7 @@ class UserProfileStore {
   bool get isAuthenticated => false;
   String get userEmail => '';
   String get userName => '';
+  String? get token => null;
   
   Future<void> load() async {}
   Future<void> logout() async {}

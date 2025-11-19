@@ -16,7 +16,7 @@ class MyTingsStore {
   void setFilterTagId(String tagId) {}
   void setFilterTag(String? tagId) {}
   void toggleDisplayGrid() {}
-  void setDisplayMode(String mode) {}
+  Future<void> setDisplayMode({bool? displayGrid}) async {}
   Future<void> update(dynamic ting) async {}
   Future<dynamic> add(dynamic ting) async => ting;
 }

@@ -202,7 +202,7 @@ void showTagEditor({
               } else {
                 final tag = await tagsStore.add(tagName);
 
-                if (onSave != null) {
+                if (onSave != null && tag != null) {
                   onSave(tag);
                 }
 

@@ -56,6 +56,7 @@ class AuthService {
       case AuthMethod.facebook:
         return await _authenticate(user.email, 'facebook');
     }
+    return false; // Default return
   }
 
   Future<void> signOut() async {

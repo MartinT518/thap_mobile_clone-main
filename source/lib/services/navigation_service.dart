@@ -70,15 +70,14 @@ class NavigationService {
       Logger().i(
           'Trying to navigate to pageId: $pageId, href: $href, openInModal: $openInModal');
 
-      final productPages = _productPagesStore.productPages
-              .firstWhereOrNull((pages) => pages.productId == product.id) ??
-          (await _productPagesStore.load(
-              product.id, context.locale.languageCode));
-
-      if (productPages == null) return;
-
-      final page =
-          productPages.pages.firstWhereOrNull((page) => page.pageId == pageId);
+      // TODO: fix after migrating ProductPagesStore to Riverpod
+      final storedPage = _productPagesStore.getStoredPage(product.id, pageId);
+      
+      if (storedPage == null) {
+        await _productPagesStore.load(product.id, pageId);
+      }
+      
+      final page = _productPagesStore.getStoredPage(product.id, pageId);
 
       if (page == null) {
         Logger()

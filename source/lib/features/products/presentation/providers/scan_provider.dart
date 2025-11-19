@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thap/features/products/domain/entities/product.dart';
 import 'package:thap/features/products/domain/repositories/products_repository.dart';
 import 'package:thap/features/products/data/providers/products_repository_provider.dart';
@@ -51,28 +52,26 @@ class _Error extends ScanState {
 }
 
 /// Scan notifier - stubbed
-class ScanNotifier {
-  ScanState build() => const ScanState.initial();
-  ScanState state = const ScanState.initial();
-  dynamic ref;
+class ScanNotifier extends ScanNotifierBase {
+  ScanNotifier() : super();
 
   /// Scan QR code
   Future<void> scanQrCode(String codeData, String codeType) async {
-    state = const ScanState.processing();
     // TODO: implement after code generation
   }
 
   /// Reset scan state
   void reset() {
-    state = const ScanState.initial();
+    // TODO: implement after code generation
   }
 }
 
 // Stubbed provider for compilation
-final scanNotifierProvider = _ScanNotifierProvider();
+final scanNotifierProvider = StateNotifierProvider<ScanNotifier, ScanState>(
+  (ref) => ScanNotifier(),
+);
 
-class _ScanNotifierProvider {
-  ScanNotifier get notifier => ScanNotifier();
-  ScanNotifier call() => ScanNotifier();
+class ScanNotifierBase extends StateNotifier<ScanState> {
+  ScanNotifierBase() : super(const ScanState.initial());
 }
 

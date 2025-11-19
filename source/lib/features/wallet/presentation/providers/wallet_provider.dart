@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:thap/features/wallet/data/providers/wallet_repository_provider.dart';
 import 'package:thap/features/wallet/domain/entities/wallet_product.dart';
 import 'package:thap/features/wallet/domain/repositories/wallet_repository.dart';
@@ -15,6 +16,21 @@ class WalletState {
   const factory WalletState.loading() = _Loading;
   const factory WalletState.loaded(List<WalletProduct> products) = _Loaded;
   const factory WalletState.error(String message) = _Error;
+  
+  T maybeWhen<T>({
+    T Function()? initial,
+    T Function()? loading,
+    T Function(List<WalletProduct>)? loaded,
+    T Function(String)? error,
+    required T Function() orElse,
+  }) => orElse();
+  
+  T when<T>({
+    required T Function() initial,
+    required T Function() loading,
+    required T Function(List<WalletProduct>) loaded,
+    required T Function(String) error,
+  }) => initial();
 }
 
 class _Initial extends WalletState {
@@ -33,9 +49,8 @@ class _Error extends WalletState {
 }
 
 /// Wallet notifier - stubbed
-class WalletNotifier {
-  WalletState build() => const WalletState.initial();
-  WalletState state = const WalletState.initial();
+class WalletNotifier extends WalletNotifierBase {
+  WalletNotifier() : super();
   
   /// Load wallet products
   Future<void> loadWalletProducts() async {
@@ -74,9 +89,11 @@ class WalletNotifier {
 }
 
 // Stubbed provider for compilation
-final walletNotifierProvider = _WalletNotifierProvider();
+final walletNotifierProvider = StateNotifierProvider<WalletNotifier, WalletState>(
+  (ref) => WalletNotifier(),
+);
 
-class _WalletNotifierProvider {
-  WalletNotifier call() => WalletNotifier();
+class WalletNotifierBase extends StateNotifier<WalletState> {
+  WalletNotifierBase() : super(const WalletState.initial());
 }
 

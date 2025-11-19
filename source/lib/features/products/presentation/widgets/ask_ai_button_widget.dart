@@ -60,7 +60,7 @@ class AskAIButtonWidget extends ConsumerWidget {
                   shareLink: product.shareLink,
                   description: product.description,
                   isOwner: product.isOwner,
-                  externalProductType: product.externalProductType,
+                  externalProductType: product.externalProductType as dynamic,
                   tags: product.tags,
                 );
 
