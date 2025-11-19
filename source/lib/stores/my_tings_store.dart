@@ -14,4 +14,8 @@ class MyTingsStore {
   Future<void> load() async {}
   Future<void> remove(ProductItem product) async {}
   void setFilterTagId(String tagId) {}
+  void setFilterTag(String? tagId) {}
+  void toggleDisplayGrid() {}
+  void setDisplayMode(String mode) {}
+  Future<void> update(dynamic ting) async {}
 }

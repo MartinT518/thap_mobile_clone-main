@@ -6,4 +6,5 @@ class ScanHistoryStore {
   
   Future<void> load() async {}
   Future<void> add(dynamic item) async {}
+  Future<void> remove(dynamic item) async {}
 }

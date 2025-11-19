@@ -38,16 +38,21 @@ class MyTingsPage extends HookWidget {
         await myTingsStore.load();
         await scanHistoryStore.load();
       },
-      child: Observer(
+      child: Builder(
         builder: (_) {
-          if ((scanHistoryStore.isLoading || myTingsStore.isLoading) &&
-              !refreshing.value) {
+          // TODO: Migrate to Riverpod - temporarily stubbed
+          final isLoading = false;
+          final hasAnyTings = false;
+          final hasAnyScanHistory = false;
+          final filterTagId = '';
+          
+          if (isLoading && !refreshing.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!myTingsStore.hasAny &&
-              !scanHistoryStore.hasAny &&
-              myTingsStore.filterTagId.isBlank) {
+          if (!hasAnyTings &&
+              !hasAnyScanHistory &&
+              filterTagId.isEmpty) {
             return Container(
               color: TingsColors.white,
               padding: const EdgeInsets.only(top: 120, bottom: 16),
@@ -67,12 +72,12 @@ class MyTingsPage extends HookWidget {
                     padding: const EdgeInsets.all(16),
                     child: Heading3(tr('my_tings.title')),
                   ),
-                  if (myTingsStore.hasAny ||
-                      myTingsStore.filterTagId.isNotBlank) ...[
+                  if (hasAnyTings ||
+                      filterTagId.isNotEmpty) ...[
                     const MyTingsTagsFilter(),
-                    MyTingsListSection(),
+                    const MyTingsListSection(),
 
-                    SharedTingsListSection(),
+                    const SharedTingsListSection(),
                   ] else
                     const MyTingsEmptySection(),
                   const SizedBox(height: 16),
@@ -99,9 +104,11 @@ class MyTingsTagsFilter extends HookWidget {
       return null;
     }, []);
 
-    return Observer(
+    return Builder(
       builder: (_) {
-        if (productTagsStore.tagsWithTings.isEmpty) return Container();
+        // TODO: Migrate to Riverpod - temporarily stubbed
+        final tagsWithTings = <TagResult>[];
+        if (tagsWithTings.isEmpty) return Container();
 
         return Container(
           height: 32,
@@ -113,19 +120,18 @@ class MyTingsTagsFilter extends HookWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 0),
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
-            itemCount: productTagsStore.tagsWithTings.length + 1,
+            itemCount: tagsWithTings.length + 1,
             itemBuilder: (_, int index) {
-              return Observer(
-                builder: (_) {
-                  final myTingsStore = locator<MyTingsStore>();
-
-                  if (index == 0) {
-                    return _buildTag(null, myTingsStore.filterTagId.isBlank);
-                  }
-                  final tag = productTagsStore.tagsWithTings[index - 1];
-                  return _buildTag(tag, myTingsStore.filterTagId == tag.id);
-                },
-              );
+              // TODO: Migrate to Riverpod
+              final filterTagId = '';
+              
+              if (index == 0) {
+                return _buildTag(null, filterTagId.isEmpty);
+              }
+              
+              final tag = tagsWithTings[index - 1];
+              final isActive = filterTagId == tag.id;
+              return _buildTag(tag, isActive);
             },
           ),
         );
@@ -174,11 +180,13 @@ class MyTingsMoreMenu extends StatelessWidget {
     final navigationService = locator<NavigationService>();
     final myTingsStore = locator<MyTingsStore>();
 
-    return Observer(
+    return Builder(
       builder: (_) {
+        // TODO: Migrate to Riverpod
+        final displayGrid = false;
         return TingsKebabMenu<String>(
           items: [
-            if (myTingsStore.displayGrid)
+            if (displayGrid)
               TingsPopupMenuItem(
                 value: 'listView',
                 name: tr('my_tings.list_view'),

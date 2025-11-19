@@ -7,4 +7,7 @@ class UserProfileStore {
   
   Future<void> load() async {}
   Future<void> logout() async {}
+  Future<void> remove() async {}
+  Future<void> setToken(String? token) async {}
+  Future<void> set(dynamic profile) async {}
 }

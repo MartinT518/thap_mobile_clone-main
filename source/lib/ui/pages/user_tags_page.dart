@@ -156,9 +156,9 @@ class UserTagsPage extends HookWidget {
                 ),
               );
             },
-            onReorder:
-                (int oldIndex, int newIndex) async =>
-                    await tagsStore.reorder(oldIndex, newIndex),
+            onReorder: (int oldIndex, int newIndex) async {
+              // TODO: Migrate to Riverpod
+            },
           );
         },
       ),

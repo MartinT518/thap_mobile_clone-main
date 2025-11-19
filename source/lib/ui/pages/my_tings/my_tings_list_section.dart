@@ -115,23 +115,21 @@ class SharedTingsListSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myTingsState = ref.watch(myTingsProvider);
     final tagsState = ref.watch(tagsNotifierProvider);
-        if (!_tagsStore.hasAny) return Container();
+    
+    // TODO: Migrate to Riverpod - temporarily stubbed
+    final sharedTings = myTingsState.sharedTingsFiltered;
+    if (sharedTings.isEmpty) return Container();
 
-        final lastTagId = _tagsStore.tags.last.id;
-        final List<ProductItem?> tings = List.from(
-          _myTingsStore.myTings.where((ting) => ting.tags.contains(lastTagId)),
-        );
+    final List<ProductItem?> tings = List.from(sharedTings);
 
-        if (tings.isEmpty) return Container();
-
-        return Column(
+    return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
               child: Heading3(tr('my_tings.shared_title')),
             ),
-            if (_myTingsStore.displayGrid)
+            if (myTingsState.displayGrid)
               GridView.builder(
                 physics: const BouncingScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -149,7 +147,7 @@ class SharedTingsListSection extends ConsumerWidget {
                     itemId: product.id,
                     confirmDeletion: true,
                     onDeleted: () async {
-                      await _myTingsStore.remove(product);
+                      await ref.read(myTingsProvider.notifier).remove(product);
                     },
                     child: ProductPageOpener(
                       product: product,
@@ -185,7 +183,7 @@ class SharedTingsListSection extends ConsumerWidget {
                           itemId: myTing.id,
                           confirmDeletion: true,
                           onDeleted: () async {
-                            await _myTingsStore.remove(myTing);
+                            await ref.read(myTingsProvider.notifier).remove(myTing);
                           },
                           child: ProductPageOpener(
                             product: myTing,
@@ -204,7 +202,5 @@ class SharedTingsListSection extends ConsumerWidget {
               ),
           ],
         );
-      },
-    );
   }
 }

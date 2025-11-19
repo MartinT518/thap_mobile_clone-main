@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:logger/logger.dart';
 import 'package:thap/extensions/string_extensions.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/models/cdn_image.dart';
 import 'package:thap/models/product_action.dart';
 import 'package:thap/models/product_item.dart';
@@ -85,9 +86,10 @@ class ProductPage extends HookWidget {
 
         return false;
       },
-      child: Observer(
+      child: Builder(
         builder: (BuildContext context) {
-          final productPage = productPagesStore.getStoredPage(product.id, page.pageId)!;
+          // TODO: Migrate to Riverpod - temporarily stubbed
+          final productPage = page; // productPagesStore.getStoredPage(product.id, page.pageId) ?? page;
 
           // Title not shown on root or preview pages as it should be inside the productPage content already
           final bool showTitle = productPage.pageId != 'root' && productPage.pageId != 'preview';
