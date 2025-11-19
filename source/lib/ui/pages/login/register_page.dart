@@ -10,9 +10,9 @@ import 'package:thap/services/auth_service.dart';
 import 'package:thap/services/navigation_service.dart';
 import 'package:thap/services/service_locator.dart';
 import 'package:thap/services/toast_service.dart';
+import 'package:thap/shared/widgets/design_system_components.dart';
 import 'package:thap/stores/user_profile_store.dart';
 import 'package:thap/ui/common/app_header_bar.dart';
-import 'package:thap/ui/common/button.dart';
 import 'package:thap/ui/common/ting_checkbox.dart';
 import 'package:thap/ui/common/tings_form.dart';
 import 'package:thap/ui/common/typography.dart';
@@ -181,8 +181,8 @@ class RegisterPage extends HookWidget {
                         ],
                       ),
                       const SizedBox(height: 36),
-                      MainButton(
-                        onTap: () async {
+                      ElevatedButton(
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             if (termsAccepted.value) {
                               final success = await authService.register(
@@ -199,7 +199,8 @@ class RegisterPage extends HookWidget {
                             }
                           }
                         },
-                        text: tr('register.button'),
+                        style: DesignSystemComponents.primaryButton(),
+                        child: Text(tr('register.button')),
                       ),
                     ],
                   ),
